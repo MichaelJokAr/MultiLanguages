@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">多语言</string>
+
+    <string name="value1">你好，世界</string>
+    <string name="btn1_title">打开新页面</string>
+    <string name="btn2_title">新建个service</string>
+    <string name="btn3_title">打开设置页面</string>
+    <string name="activity2_title">这是新页面</string>
+    <string name="setting_activity_title">这是设置页面</string>
+
+    <string name="system_language">当前系统语言: %1$s</string>
+    <string name="user_select_language">当前用户选择语言: %s</string>
+    <string name="tv3_value">通过代码设置text</string>
+
+    <string name="service_create">已创建service</string>
+
+    <string name="language_cn">中文</string>
+    <string name="language_en">ENGLISH</string>
+    <string name="language_auto">自动</string>
+    <string name="language_traditional">繁體</string>
+
+    <string name="language_select">当前选择的语言: %s</string>
+</resources>

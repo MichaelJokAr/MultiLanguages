@@ -4,14 +4,14 @@ buildscript {
     
     repositories {
         google()
-        maven { url 'https://nexus.taojiji.work/nexus/content/groups/public/' }
-        maven { url 'http://192.168.30.151:8081/nexus/content/repositories/ocss-release/' }
         jcenter()
         mavenCentral()
+        maven {url 'https://dl.bintray.com/a10188755550/maven'}
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.1'
-        classpath 'com.github.jokar:multi-language.plugin:0.2.9-SNAPSHOT'
+        classpath 'com.novoda:bintray-release:0.9.1'
+        classpath 'com.github.jokar:multi-languages.plugin:0.0.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -20,13 +20,20 @@ buildscript {
 allprojects {
     repositories {
         google()
-        maven { url 'https://nexus.taojiji.work/nexus/content/groups/public/' }
-        maven { url 'http://192.168.30.151:8081/nexus/content/repositories/ocss-release/' }
         jcenter()
         mavenCentral()
+        maven {url 'https://dl.bintray.com/a10188755550/maven'}
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+tasks.withType(Javadoc) {
+    options{
+        encoding "UTF-8"
+        charSet 'UTF-8'
+        links "http://docs.oracle.com/javase/7/docs/api"
+    }
 }

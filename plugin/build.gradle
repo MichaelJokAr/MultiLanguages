@@ -1,5 +1,6 @@
 apply plugin: 'java-library'
 apply plugin: 'groovy'
+apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -16,4 +17,11 @@ sourceCompatibility = "7"
 targetCompatibility = "7"
 
 
-apply from: 'maven.gradle'
+publish {
+    userOrg = 'a10188755550'
+    groupId = 'com.github.jokar'
+    artifactId = 'multi-languages.plugin'
+    publishVersion = '0.0.1'
+    desc = 'android multi language support (support android O+)'
+    website = 'https://github.com/MichaelJokAr/MultiLanguages'
+}

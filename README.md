@@ -1,4 +1,4 @@
-### Android  语言切换（兼容8.0+） 2.0版本，一句代码完成多语言切换，现在支持第三方包里多语言切换（前提是有对应的语言资源）
+### Android 多语言切换（兼容8.0+） 2.0版本，一句代码完成多语言切换，现在支持第三方包里多语言切换（前提是有对应的语言资源）
 
 2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写
 ### 使用
@@ -54,7 +54,7 @@
     }
     ```
 
-    ```LocalManageUtil```里做的是保存选择的语言设置
+    [LocalManageUtil](./app/src/main/java/com/github/jokar/multilanguages/utils/LocalManageUtil.java)里做的是保存选择的语言设置
 
 
 以上就完成了初始化了，

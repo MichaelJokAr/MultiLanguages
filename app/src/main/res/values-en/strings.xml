@@ -17,7 +17,7 @@
 
     <string name="language_cn">中文</string>
     <string name="language_en">ENGLISH</string>
-    <string name="language_auto">自动</string>
+    <string name="language_auto">auto</string>
     <string name="language_traditional">繁體</string>
 
     <string name="language_select">Currently selected language:  %s</string>

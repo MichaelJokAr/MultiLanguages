@@ -1,13 +1,10 @@
 package com.github.jokar.multilanguages;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.widget.Toast;
-
-import com.github.jokar.multilanguages.library.MultiLanguage;
 
 public class MyServices extends IntentService {
 
@@ -15,10 +12,6 @@ public class MyServices extends IntentService {
         super("MyServices");
     }
 
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(MultiLanguage.setLocal(newBase));
-    }
 
     @Nullable
     @Override

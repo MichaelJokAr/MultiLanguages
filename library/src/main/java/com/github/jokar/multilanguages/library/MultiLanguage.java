@@ -90,6 +90,7 @@ public class MultiLanguage {
     }
 
     /**
+     * 获取系统语言
      * @param newConfig
      * @return
      */
@@ -103,4 +104,18 @@ public class MultiLanguage {
         return locale;
     }
 
+    /**
+     * 获取系统语言
+     * @param context
+     * @return
+     */
+    public static Locale getSystemLocal(Context context) {
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = LocaleList.getDefault().get(0);
+        } else {
+            locale = Locale.getDefault();
+        }
+        return locale;
+    }
 }

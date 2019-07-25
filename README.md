@@ -18,7 +18,7 @@
     ```
 - 导入```Library```
     ```
-    implementation 'com.github.jokar:multi-languages:0.0.3'
+    implementation 'com.github.jokar:multi-languages:0.0.4'
     ```
 
 - application init

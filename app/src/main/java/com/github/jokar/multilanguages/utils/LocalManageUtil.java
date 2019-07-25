@@ -2,9 +2,6 @@ package com.github.jokar.multilanguages.utils;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.os.Build;
-import android.os.LocaleList;
-import android.util.Log;
 
 import com.github.jokar.multilanguages.R;
 import com.github.jokar.multilanguages.library.MultiLanguage;
@@ -61,14 +58,7 @@ public class LocalManageUtil {
 
 
     public static void saveSystemCurrentLanguage(Context context) {
-        Locale locale;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            locale = LocaleList.getDefault().get(0);
-        } else {
-            locale = Locale.getDefault();
-        }
-        Log.d(TAG, locale.getLanguage());
-        SPUtil.getInstance(context).setSystemCurrentLocal(locale);
+        SPUtil.getInstance(context).setSystemCurrentLocal(MultiLanguage.getSystemLocal(context));
     }
 
     /**

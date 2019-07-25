@@ -41,7 +41,7 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
      *
      * @return true是 activity类
      */
-    private boolean isActivity() {
+    public boolean isActivity() {
         return superClassName.equals("android/support/v4/app/FragmentActivity")
                 || superClassName.equals("android/support/v7/app/AppCompatActivity")
                 || superClassName.equals("android/app/Activity");
@@ -52,7 +52,7 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
      *
      * @return true 是 service类
      */
-    private boolean isService() {
+    public boolean isService() {
         return superClassName.equals("android/app/IntentService")
                 || superClassName.equals("android/app/Service");
     }

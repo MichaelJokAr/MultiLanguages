@@ -77,14 +77,8 @@ public class LocalManageUtil {
      * @param newConfig
      */
     public static void saveSystemCurrentLanguage(Context context, Configuration newConfig) {
-        Locale locale;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            locale = newConfig.getLocales().get(0);
-        } else {
-            locale = newConfig.locale;
-        }
-        Log.d(TAG, locale.getLanguage());
-        SPUtil.getInstance(context).setSystemCurrentLocal(locale);
+
+        SPUtil.getInstance(context).setSystemCurrentLocal(MultiLanguage.getSystemLocal(newConfig));
     }
 
     public static void saveSelectLanguage(Context context, int select) {

@@ -39,9 +39,10 @@ public class MethodVisitorUtil {
         mv.visitEnd();
     }
 
+
     public static void addServiceAttach(ClassWriter cw) {
-        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "attachBaseContext", "(Landroid/content/Context;)V",
-                null, null);
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "attachBaseContext",
+                "(Landroid/content/Context;)V", null, null);
         mv.visitCode();
         Label l0 = new Label();
         mv.visitLabel(l0);
@@ -56,7 +57,7 @@ public class MethodVisitorUtil {
         mv.visitInsn(RETURN);
         Label l2 = new Label();
         mv.visitLabel(l2);
-        mv.visitLocalVariable("base", "Landroid/content/Context;", null, l0, l2, 1);
+        mv.visitLocalVariable("newBase", "Landroid/content/Context;", null, l0, l2, 1);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
     }

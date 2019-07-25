@@ -23,7 +23,7 @@ class MultiLanguagesTransform extends Transform {
 
     @Override
     String getName() {
-        return 'MultiLanguagesTransform'
+        return 'MultiLanguages'
     }
 
     @Override
@@ -123,7 +123,11 @@ class MultiLanguagesTransform extends Transform {
     private static void addAttachMethod(ActivityServiceClassVisitor cv, name, ClassWriter classWriter) {
         if (cv.needAddAttach()) {
             println("add attach method to ${name}")
-            MethodVisitorUtil.addActivityAttach(classWriter)
+            if(cv.activity) {
+                MethodVisitorUtil.addActivityAttach(classWriter)
+            }else if(cv.service){
+                MethodVisitorUtil.addServiceAttach(classWriter)
+            }
         }
     }
 

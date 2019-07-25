@@ -4,7 +4,7 @@
 ### 使用
 - 引入gradle plugin
     ```
-    classpath 'com.github.jokar:multi-languages.plugin:0.0.1'
+    classpath 'com.github.jokar:multi-languages.plugin:0.0.3'
     ```
 - app ```buidle.gradle``` 文件引入plugin
     ```
@@ -18,7 +18,7 @@
     ```
 - 导入```Library```
     ```
-    implementation 'com.github.jokar:multi-languages:0.0.1'
+    implementation 'com.github.jokar:multi-languages:0.0.3'
     ```
 
 - application init

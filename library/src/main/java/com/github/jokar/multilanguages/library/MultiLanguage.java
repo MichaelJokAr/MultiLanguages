@@ -89,4 +89,18 @@ public class MultiLanguage {
         return context;
     }
 
+    /**
+     * @param newConfig
+     * @return
+     */
+    public static Locale getSystemLocal(Configuration newConfig) {
+        Locale locale;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            locale = newConfig.getLocales().get(0);
+        } else {
+            locale = newConfig.locale;
+        }
+        return locale;
+    }
+
 }

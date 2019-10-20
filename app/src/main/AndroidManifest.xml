@@ -22,7 +22,8 @@
         <activity android:name=".SecondActivity" />
         <activity android:name=".SettingActivity" />
 
-        <service android:name=".MyServices" />
+        <service android:name=".MyIntentServices" />
+        <service android:name=".MyService"/>
     </application>
 
 </manifest>

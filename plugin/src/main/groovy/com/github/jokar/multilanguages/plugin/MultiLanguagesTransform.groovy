@@ -127,6 +127,8 @@ class MultiLanguagesTransform extends Transform {
                 MethodVisitorUtil.addActivityAttach(classWriter)
             }else if(cv.service){
                 MethodVisitorUtil.addServiceAttach(classWriter)
+            }else if(cv.intentService){
+                MethodVisitorUtil.addIntentServiceAttach(classWriter)
             }
         }
     }

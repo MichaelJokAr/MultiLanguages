@@ -40,7 +40,7 @@ public class MethodVisitorUtil {
     }
 
 
-    public static void addServiceAttach(ClassWriter cw) {
+    public static void addIntentServiceAttach(ClassWriter cw) {
         MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "attachBaseContext",
                 "(Landroid/content/Context;)V", null, null);
         mv.visitCode();
@@ -58,6 +58,27 @@ public class MethodVisitorUtil {
         Label l2 = new Label();
         mv.visitLabel(l2);
         mv.visitLocalVariable("newBase", "Landroid/content/Context;", null, l0, l2, 1);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
+    }
+
+    public static void addServiceAttach(ClassWriter cw){
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "attachBaseContext", "(Landroid/content/Context;)V", null, null);
+        mv.visitCode();
+        Label l0 = new Label();
+        mv.visitLabel(l0);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage",
+                "setLocal", "(Landroid/content/Context;)Landroid/content/Context;", false);
+        mv.visitMethodInsn(INVOKESPECIAL, "android/app/Service", "attachBaseContext",
+                "(Landroid/content/Context;)V", false);
+        Label l1 = new Label();
+        mv.visitLabel(l1);
+        mv.visitInsn(RETURN);
+        Label l2 = new Label();
+        mv.visitLabel(l2);
+        mv.visitLocalVariable("base", "Landroid/content/Context;", null, l0, l2, 1);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
     }

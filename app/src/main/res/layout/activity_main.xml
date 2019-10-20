@@ -31,14 +31,15 @@
         android:id="@+id/tv_3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp" />
 
 
     <TextView
         android:id="@+id/tv_4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp" />
+
     <Button
         android:id="@+id/btn_1"
         android:layout_width="wrap_content"
@@ -53,6 +54,12 @@
         android:layout_marginTop="10dp"
         android:text="@string/btn2_title" />
 
+    <Button
+        android:id="@+id/btn_4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/btn4_title"/>
 
     <Button
         android:id="@+id/btn_3"

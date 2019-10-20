@@ -13,8 +13,9 @@ import com.github.jokar.multilanguages.utils.LocalManageUtil;
 public class MainActivity extends BaseActivity {
 
     private Button startNewActivity;
-    private Button startNewService;
+    private Button startNewIntentService;
     private Button startSettingActivity;
+    private Button startNewService;
     //
     private TextView tvSystemLanguage;
     private TextView tvUserSelectLanguage;
@@ -33,8 +34,9 @@ public class MainActivity extends BaseActivity {
 
     private void initView() {
         startNewActivity = findViewById(R.id.btn_1);
-        startNewService = findViewById(R.id.btn_2);
+        startNewIntentService = findViewById(R.id.btn_2);
         startSettingActivity = findViewById(R.id.btn_3);
+        startNewService = findViewById(R.id.btn_4);
         //
         tvSystemLanguage = findViewById(R.id.tv_system_language);
         tvUserSelectLanguage = findViewById(R.id.tv_user_select);
@@ -56,10 +58,18 @@ public class MainActivity extends BaseActivity {
         });
 
 
+        startNewIntentService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, MyIntentServices.class);
+                startService(intent);
+            }
+        });
+
         startNewService.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, MyServices.class);
+                Intent intent = new Intent(MainActivity.this, MyService.class);
                 startService(intent);
             }
         });

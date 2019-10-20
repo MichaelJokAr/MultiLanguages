@@ -33,27 +33,23 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
     }
 
     public boolean needAddAttach() {
-        return isActivity() || isService();
+        return isActivity() || isService() || isIntentService();
     }
 
-    /**
-     * 是否是Activity类
-     *
-     * @return true是 activity类
-     */
+
     public boolean isActivity() {
         return superClassName.equals("android/support/v4/app/FragmentActivity")
                 || superClassName.equals("android/support/v7/app/AppCompatActivity")
                 || superClassName.equals("android/app/Activity");
     }
 
-    /**
-     * 是否是service类
-     *
-     * @return true 是 service类
-     */
+
     public boolean isService() {
-        return superClassName.equals("android/app/IntentService")
-                || superClassName.equals("android/app/Service");
+        return  superClassName.equals("android/app/Service");
+    }
+
+
+    public boolean isIntentService(){
+        return superClassName.equals("android/app/IntentService");
     }
 }

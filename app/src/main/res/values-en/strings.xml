@@ -4,8 +4,9 @@
 
     <string name="value1">hello , world</string>
     <string name="btn1_title">start new activity</string>
-    <string name="btn2_title">start new service</string>
+    <string name="btn2_title">start new IntentService</string>
     <string name="btn3_title">start setting activity</string>
+    <string name="btn4_title">start new Service</string>
     <string name="activity2_title">this is new activity</string>
     <string name="setting_activity_title">this is setting activity</string>
 
@@ -14,6 +15,7 @@
     <string name="tv3_value">set text by code</string>
 
     <string name="service_create">created service</string>
+    <string name="intent_service_create">created IntentService</string>
 
     <string name="language_cn">中文</string>
     <string name="language_en">ENGLISH</string>

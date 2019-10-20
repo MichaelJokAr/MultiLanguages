@@ -3,8 +3,9 @@
 
     <string name="value1">你好，世界</string>
     <string name="btn1_title">打开新页面</string>
-    <string name="btn2_title">新建个service</string>
+    <string name="btn2_title">新建个IntentService</string>
     <string name="btn3_title">打开设置页面</string>
+    <string name="btn4_title">新建个Service</string>
     <string name="activity2_title">这是新页面</string>
     <string name="setting_activity_title">这是设置页面</string>
 
@@ -13,6 +14,7 @@
     <string name="tv3_value">通过代码设置text</string>
 
     <string name="service_create">已创建service</string>
+    <string name="intent_service_create">已创建IntentService</string>
 
     <string name="language_cn">中文</string>
     <string name="language_en">ENGLISH</string>

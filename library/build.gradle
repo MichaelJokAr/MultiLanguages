@@ -33,7 +33,7 @@ publish {
     userOrg = 'a10188755550'
     groupId = 'com.github.jokar'
     artifactId = 'multi-languages'
-    publishVersion = '0.0.4'
+    publishVersion = '0.0.5'
     desc = 'android multi language support (support android O+)'
     website = 'https://github.com/MichaelJokAr/MultiLanguages'
 }

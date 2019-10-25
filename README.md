@@ -1,10 +1,15 @@
+
 ### Android 多语言切换（兼容8.0+） 2.0版本，一句代码完成多语言切换，现在支持第三方包里多语言切换（前提是有对应的语言资源）
 
 2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写
 ### 使用
+- multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
+
+- multi-languages [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages/images/download.svg) ](https://bintray.com/a10188755550/maven/multi-languages/_latestVersion)
+
 - 引入gradle plugin
     ```
-    classpath 'com.github.jokar:multi-languages.plugin:0.0.3'
+    classpath 'com.github.jokar:multi-languages.plugin:<latest-version>'
     ```
 - app ```buidle.gradle``` 文件引入plugin
     ```
@@ -18,7 +23,7 @@
     ```
 - 导入```Library```
     ```
-    implementation 'com.github.jokar:multi-languages:0.0.4'
+    implementation 'com.github.jokar:multi-languages:<latest-version>'
     ```
 
 - application init

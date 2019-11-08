@@ -123,12 +123,18 @@ class MultiLanguagesTransform extends Transform {
     private static void addAttachMethod(ActivityServiceClassVisitor cv, name, ClassWriter classWriter) {
         if (cv.needAddAttach()) {
             println("add attach method to ${name}")
-            if(cv.activity) {
+            //添加attachBaseContext方法
+            if (cv.activity) {
                 MethodVisitorUtil.addActivityAttach(classWriter)
-            }else if(cv.service){
+            } else if (cv.service) {
                 MethodVisitorUtil.addServiceAttach(classWriter)
-            }else if(cv.intentService){
+            } else if (cv.intentService) {
                 MethodVisitorUtil.addIntentServiceAttach(classWriter)
+            }
+            //添加applyOverrideConfiguration方法
+            if (cv.needAddACMethod()) {
+                println("add applyOverrideConfiguration method to ${name}")
+                MethodVisitorUtil.addApplyOverrideConfiguration(classWriter, cv.className)
             }
         }
     }

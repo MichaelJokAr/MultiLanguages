@@ -21,7 +21,7 @@ publish {
     userOrg = 'a10188755550'
     groupId = 'com.github.jokar'
     artifactId = 'multi-languages.plugin'
-    publishVersion = '0.0.5'
+    publishVersion = "$version"
     desc = 'android multi language support (support android O+)'
     website = 'https://github.com/MichaelJokAr/MultiLanguages'
 }

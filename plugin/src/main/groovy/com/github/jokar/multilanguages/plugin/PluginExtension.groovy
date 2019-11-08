@@ -7,6 +7,6 @@ class PluginExtension {
     String toString() {
         return "PluginExtension{" +
                 "enable=" + enable +
-                '}';
+                '}'
     }
 }

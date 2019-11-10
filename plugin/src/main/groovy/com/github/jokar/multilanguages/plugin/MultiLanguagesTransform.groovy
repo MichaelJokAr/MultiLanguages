@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.slf4j.LoggerFactory
 
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
@@ -16,6 +17,7 @@ import java.util.zip.ZipEntry
 
 class MultiLanguagesTransform extends Transform {
     private PluginExtension pluginExtension
+    def static slf4jLogger = LoggerFactory.getLogger('logger')
 
     MultiLanguagesTransform(PluginExtension pluginExtension) {
         this.pluginExtension = pluginExtension
@@ -93,7 +95,7 @@ class MultiLanguagesTransform extends Transform {
                 if (checkClassFile(name)) {
                     def classReader = new ClassReader(file.bytes)
                     def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    def cv = new ActivityServiceClassVisitor(classWriter)
+                    def cv = new ActivityServiceClassVisitor(classWriter, pluginExtension.overwriteClass)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     //添加方法
                     addAttachMethod(cv, name, classWriter)
@@ -122,14 +124,19 @@ class MultiLanguagesTransform extends Transform {
      */
     private static void addAttachMethod(ActivityServiceClassVisitor cv, name, ClassWriter classWriter) {
         if (cv.needAddAttach()) {
-            println("add attach method to ${name}")
-            //添加attachBaseContext方法
-            if (cv.activity) {
-                MethodVisitorUtil.addActivityAttach(classWriter)
-            } else if (cv.service) {
-                MethodVisitorUtil.addServiceAttach(classWriter)
-            } else if (cv.intentService) {
-                MethodVisitorUtil.addIntentServiceAttach(classWriter)
+            if (cv.shouldOverwriteAttachMethod) {
+                println("add attach method to ${name}")
+                //添加attachBaseContext方法
+                if (cv.activity) {
+                    MethodVisitorUtil.addActivityAttach(classWriter)
+                } else if (cv.service) {
+                    MethodVisitorUtil.addServiceAttach(classWriter)
+                } else if (cv.intentService) {
+                    MethodVisitorUtil.addIntentServiceAttach(classWriter)
+                }
+            } else {
+                slf4jLogger.error("skip ${name}, you should overwrite attachBaseContext by your self, " +
+                        "or you can add this full class name to plugin extension.overwriteClass")
             }
             //添加applyOverrideConfiguration方法
             if (cv.needAddACMethod()) {
@@ -171,7 +178,7 @@ class MultiLanguagesTransform extends Transform {
                     jarOutputStream.putNextEntry(zipEntry)
                     def classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-                    def cv = new ActivityServiceClassVisitor(classWriter)
+                    def cv = new ActivityServiceClassVisitor(classWriter, pluginExtension.overwriteClass)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     //
                     addAttachMethod(cv, entryName, classWriter)

@@ -5,6 +5,8 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
+import java.util.List;
+
 /**
  * Create by JokAr. on 2019-07-08.
  */
@@ -15,9 +17,12 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
      * 是否有applyOverrideConfiguration方法
      */
     private boolean hasACMethod;
+    private boolean shouldOverwriteAttachMethod = true;
+    private List<String> overwriteClass;
 
-    public ActivityServiceClassVisitor(ClassWriter cv) {
+    public ActivityServiceClassVisitor(ClassWriter cv, List<String> overwriteClass) {
         super(Opcodes.ASM5, cv);
+        this.overwriteClass = overwriteClass;
     }
 
     @Override
@@ -34,8 +39,13 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
         if (needAddAttach()) {
             hasACMethod = name.equals("applyOverrideConfiguration");
             if (name.equals("attachBaseContext")) {
-                //删除原有 attachBaseContext 方法
-                return null;
+                if (showOverwriteAttachMethod()) {
+                    shouldOverwriteAttachMethod = true;
+                    //删除原有 attachBaseContext 方法
+                    return null;
+                } else {
+                    shouldOverwriteAttachMethod = false;
+                }
             } else if (isAndroidxActivity() && name.equals("applyOverrideConfiguration")) {
                 //是继承androidx.AppCompatActivity的activity,在 applyOverrideConfiguration
                 //添加 overrideConfiguration.setTo(this.getBaseContext().getResources().getConfiguration());
@@ -119,5 +129,24 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
 
     public String getClassName() {
         return className;
+    }
+
+    /**
+     * 是否强制覆盖重写attach方法
+     *
+     * @return
+     */
+    private boolean showOverwriteAttachMethod() {
+        for (String clazz : overwriteClass) {
+            String clazzName = clazz.replaceAll("\\.","\\/");
+            if (clazzName.equals(className)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isShouldOverwriteAttachMethod() {
+        return shouldOverwriteAttachMethod;
     }
 }

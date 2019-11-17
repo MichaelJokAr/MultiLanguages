@@ -1,7 +1,14 @@
 
 ### Android 多语言切换（兼容8.0+） 2.0版本，一句代码完成多语言切换，现在支持第三方包里多语言切换（前提是有对应的语言资源）
 
-2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写
+
+
+### **实现原理**
+[多语言实现](https://blog.csdn.net/a1018875550/article/details/79845949)
+
+### 2.0版本
+2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写（具体请看plugin下代码）
+
 ### **使用**
 - multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
 
@@ -66,7 +73,7 @@
 
 ----
 
-### **```attachBaseContext```方法已被重写过**
+### **```attachBaseContext```方法已被重写过？**
 在v0.0.7版本去除了强制重写```attachBaseContext```方法的逻辑，如果类里原来重写了该方法需要手动加上
 
 ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
@@ -83,9 +90,6 @@
 ### **locales列表**
 
 https://github.com/championswimmer/android-locales
-
-### 博客
-[多语言实现](https://blog.csdn.net/a1018875550/article/details/79845949)
 
 
 ----

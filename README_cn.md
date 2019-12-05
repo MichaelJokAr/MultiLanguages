@@ -80,18 +80,20 @@
 ----
 
 ### **```attachBaseContext```方法已被重写过？**
-在v0.0.7版本去除了强制重写```attachBaseContext```方法的逻辑，如果类里原来重写了该方法需要手动加上
+在v0.0.7版本去除了强制重写```attachBaseContext```方法的逻辑，
 
-``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
+- 如果需要修改该类则在该类原来重写了该方法需要手动加上
 
-如果需要强制重写可以在在插件配置里```overwriteClass```里加上全路径包名后插件覆盖重写 
+    ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
 
-```
-    multiLanguages {
-    enable = true
-    overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
-    }
-```
+- 如果需要强制重写可以在在插件配置里```overwriteClass```里加上全路径包名后插件覆盖重写 
+
+    ```
+        multiLanguages {
+        enable = true
+        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
+        }
+    ```
 
 ### **locales列表**
 

@@ -81,19 +81,19 @@ then the init is done
 ----
 
 ### **```attachBaseContext``` method was been rewritten?**
-in version v0.0.7 removed the logic for forcing the override of the attachBaseContext method.
-If the method was originally overridden in the class, it needs to be added manually
+in version v0.0.7 removed the logic for forcing the override of the ```attachBaseContext``` method.
+- If the method was originally overridden in the class, it needs to be added manually
 
-``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
+    ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
 
-If you need to force a rewrite, you can add the full path package name to the overwriteClass in the plugin configuration.
+- If you need to force a rewrite, you can add the full path package name to the ```overwriteClass``` in the plugin configuration.
 
-```
-    multiLanguages {
-    enable = true
-    overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
-    }
-```
+    ```
+        multiLanguages {
+        enable = true
+        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
+        }
+    ```
 
 ### **locales list**
 

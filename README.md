@@ -25,7 +25,7 @@
     ```
     apply plugin: 'multi-languages'
     ```
-    
+    插件配置
     ```
     multiLanguages {
         //可以配置开关来控制是否重写(插件会耗时一部分的编译时间)

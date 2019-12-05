@@ -6,7 +6,7 @@
 ### **实现原理**
 [多语言实现](https://blog.csdn.net/a1018875550/article/details/79845949)
 
-### 2.0版本
+### **2.0版本**
 2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写（具体请看[plugin](./plugin)下代码）
 
 - 支持AndroidX

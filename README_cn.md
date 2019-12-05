@@ -1,39 +1,40 @@
 
-### Android multi-language（support android O+） [中文](./README_cn.md)
-
-support third library  multi-language( if there is a corresponding language resource file) ,in version 2.0.
+### Android 多语言切换（兼容8.0+） 2.0版本，一句代码完成多语言切换，现在支持第三方包里多语言切换（前提是有对应的语言资源）
 
 
-### **version 2.0**
-Uses the Transform API to compile instrumentation to achieve ```attachBaseContext``` method auto insert of  ```Activity``` and ```Service``` (code is in [plugin](./plugin))
 
-- support androidx
-- support kotlin
+### **实现原理**
+[多语言实现](https://blog.csdn.net/a1018875550/article/details/79845949)
 
+### 2.0版本
+2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写（具体请看[plugin](./plugin)下代码）
 
-### **Uses**
+- 支持AndroidX
+- 支持kotlin
+
+### **使用**
 - multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
 
 - multi-languages [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages/images/download.svg) ](https://bintray.com/a10188755550/maven/multi-languages/_latestVersion)
 
-- Import gradle plugin
+- 引入gradle plugin
     ```
     classpath 'com.github.jokar:multi-languages.plugin:<latest-version>'
     ```
-- apply plugin in app ```buidle.gradle``` file
+- app ```buidle.gradle``` 文件引入plugin
     ```
     apply plugin: 'multi-languages'
     ```
-    gradle configuration
+    插件配置
     ```
     multiLanguages {
-        //set plugin is enable( default)
+        //可以配置开关来控制是否重写(插件会耗时一部分的编译时间)
         enable = true
-        //add forced reorganization of the attachBaseContext method class (If the attachBaseContext method has been overridden in the class, the override will not be overridden by default)
+        //配置强制重写attachBaseContext方法类（如果类里已经重写了attachBaseContext方法，默认不会覆盖重写）
         overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"] 
     }
     ```
-- import ```Library```
+- 导入```Library```
     ```
     implementation 'com.github.jokar:multi-languages:<latest-version>'
     ```
@@ -43,7 +44,7 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
    public class MultiLanguagesApp extends Application {
     @Override
     protected void attachBaseContext(Context base) {
-        //Save the system language selection when entering the app for the first time.
+        //第一次进入app时保存系统选择语言(为了选择随系统语言时使用，如果不保存，切换语言后就拿不到了）
         LocalManageUtil.saveSystemCurrentLanguage(base);
         super.attachBaseContext(MultiLanguage.setLocal(base));
     }
@@ -51,9 +52,7 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        /**
-        The user saves the system selection language when switching languages on the system settings page (in order to select when the system language is used, if it is not saved, it will not be available after switching languages)
-        **/
+        //用户在系统设置页面切换语言时保存系统选择语言(为了选择随系统语言时使用，如果不保存，切换语言后就拿不到了）
         LocalManageUtil.saveSystemCurrentLanguage(getApplicationContext(), newConfig);
         MultiLanguage.onConfigurationChanged(getApplicationContext());
     }
@@ -64,7 +63,7 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
         MultiLanguage.init(new LanguageLocalListener() {
             @Override
             public Locale getSetLanguageLocale(Context context) {
-                //return your local settings
+                //返回自己本地保存选择的语言设置
                 return LocalManageUtil.getSetLanguageLocale(context);
             }
         });
@@ -73,20 +72,19 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
     }
     ```
 
-    sample of save multi-language select [LocalManageUtil](./app/src/main/java/com/github/jokar/multilanguages/utils/LocalManageUtil.java)
+    [LocalManageUtil](./app/src/main/java/com/github/jokar/multilanguages/utils/LocalManageUtil.java)里做的是保存选择的语言设置
 
 
-then the init is done
+以上就完成了初始化了，
 
 ----
 
-### **```attachBaseContext``` method was been rewritten?**
-in version v0.0.7 removed the logic for forcing the override of the attachBaseContext method.
-If the method was originally overridden in the class, it needs to be added manually
+### **```attachBaseContext```方法已被重写过？**
+在v0.0.7版本去除了强制重写```attachBaseContext```方法的逻辑，如果类里原来重写了该方法需要手动加上
 
 ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
 
-If you need to force a rewrite, you can add the full path package name to the overwriteClass in the plugin configuration.
+如果需要强制重写可以在在插件配置里```overwriteClass```里加上全路径包名后插件覆盖重写 
 
 ```
     multiLanguages {
@@ -95,10 +93,10 @@ If you need to force a rewrite, you can add the full path package name to the ov
     }
 ```
 
-### **locales list**
+### **locales列表**
 
 https://github.com/championswimmer/android-locales
 
 
 ----
-[sample-image](https://upload-images.jianshu.io/upload_images/2001124-97c41107c687cfab.gif?imageMogr2/auto-orient/strip)
+[效果图](https://upload-images.jianshu.io/upload_images/2001124-97c41107c687cfab.gif?imageMogr2/auto-orient/strip)

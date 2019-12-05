@@ -11,6 +11,7 @@
 
 - 支持AndroidX
 - 支持kotlin
+- **不支持Instant Run**
 
 ### **使用**
 - multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)

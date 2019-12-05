@@ -9,6 +9,7 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
 
 - support androidx
 - support kotlin
+- **Not support Instant Run**
 
 
 ### **Uses**

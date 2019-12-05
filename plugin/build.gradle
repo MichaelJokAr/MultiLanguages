@@ -25,6 +25,3 @@ publish {
     desc = 'android multi language support (support android O+)'
     website = 'https://github.com/MichaelJokAr/MultiLanguages'
 }
-
-
-apply from: 'maven.gradle'

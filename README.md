@@ -9,6 +9,9 @@
 ### 2.0版本
 2.0版本使用Transform API 编译插桩的方式来实现```Activity```,```Service``` 的```attachBaseContext```方法覆盖重写（具体请看[plugin](./plugin)下代码）
 
+- 支持AndroidX
+- 支持kotlin
+
 ### **使用**
 - multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
 

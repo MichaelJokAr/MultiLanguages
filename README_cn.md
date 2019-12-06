@@ -102,4 +102,4 @@ https://github.com/championswimmer/android-locales
 
 
 ----
-[效果图](https://upload-images.jianshu.io/upload_images/2001124-97c41107c687cfab.gif?imageMogr2/auto-orient/strip)
+[效果图](./image/sample.gif)

@@ -102,4 +102,4 @@ https://github.com/championswimmer/android-locales
 
 
 ----
-[效果图](./image/sample.gif)
+![效果图](./image/sample.gif)

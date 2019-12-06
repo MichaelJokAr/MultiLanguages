@@ -103,4 +103,4 @@ https://github.com/championswimmer/android-locales
 
 
 ----
-[sample-image](./image/sample.gif)
+![sample-image](./image/sample.gif)

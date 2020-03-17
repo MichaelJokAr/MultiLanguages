@@ -7,8 +7,8 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.slf4j.Logger;
 
-import java.util.List;
 import java.util.ListIterator;
 
 /**
@@ -21,29 +21,17 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      * 是否有applyOverrideConfiguration方法
      */
     private boolean hasACMethod;
+    private Logger mLogger;
+    private boolean shouldOverwriteAttachMethod = true;
+    private ClassWriter mClassWriter;
 
-    public ActivityServiceClassVisitorV3(ClassWriter cv) {
+    public ActivityServiceClassVisitorV3(ClassWriter cv, Logger logger) {
         super(Opcodes.ASM5);
         this.cv = cv;
-        if(methods != null && !methods.isEmpty()){
-            for (MethodNode method : methods) {
-                ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
-                while (iterator.hasNext()){
-                    AbstractInsnNode abstractInsnNode = iterator.next();
-                   if(abstractInsnNode.getOpcode() == Opcodes.INVOKEVIRTUAL){
-                       //替换内容
-                       transformInvokeVirtual( method, (MethodInsnNode) abstractInsnNode);
-                   }
-                }
-            }
-        }
+        mClassWriter = cv;
+        this.mLogger = logger;
     }
 
-    private void transformInvokeVirtual(MethodNode method, MethodInsnNode insnNode) {
-        if("".equals(insnNode.owner)){
-
-        }
-    }
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName,
@@ -59,15 +47,81 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         if (needAddAttach()) {
             hasACMethod = name.equals("applyOverrideConfiguration");
             if (name.equals("attachBaseContext")) {
-
+                shouldOverwriteAttachMethod = false;
             } else if (isAndroidxActivity() && name.equals("applyOverrideConfiguration")) {
                 //是继承androidx.AppCompatActivity的activity,在 applyOverrideConfiguration
                 //添加 overrideConfiguration.setTo(this.getBaseContext().getResources().getConfiguration());
-                return new ApplyOverrideConfigurationMV(cv.visitMethod(access, name, descriptor,
+                return new ApplyOverrideConfigurationMV(mClassWriter.visitMethod(access, name, descriptor,
                         signature, exceptions), this.className);
             }
         }
         return super.visitMethod(access, name, descriptor, signature, exceptions);
+    }
+
+    @Override
+    public void visitEnd() {
+        super.visitEnd();
+        replaceSuperMethod();
+//        addAttchMethod();
+    }
+
+    /**
+     * 替换super方法
+     */
+    private void replaceSuperMethod() {
+        if (methods != null && !methods.isEmpty()) {
+            for (MethodNode method : methods) {
+                ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+                while (iterator.hasNext()) {
+                    AbstractInsnNode abstractInsnNode = iterator.next();
+                    if (abstractInsnNode.getOpcode() == Opcodes.INVOKESPECIAL) {
+                        //替换内容
+                        transformInvokeVirtual(method, (MethodInsnNode) abstractInsnNode);
+                    }
+                }
+            }
+        }
+    }
+
+    private void transformInvokeVirtual(MethodNode method, MethodInsnNode insnNode) {
+        if (needAddAttach()
+                && "attachBaseContext".equals(insnNode.name)
+                && "(Landroid/content/Context;)V".equals(insnNode.desc)) {
+            mLogger.error(insnNode.owner + " - " + insnNode.name + " - " + insnNode.desc);
+//            method.instructions.insertBefore(insnNode, new LdcInsnNode(""));
+//            method.instructions.insertBefore(insnNode, new LdcInsnNode(method.name));
+            method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    "com/github/jokar/multilanguages/library/MultiLanguage",
+                    "setLocal",
+                    "(Landroid/content/Context;)Landroid/content/Context;",
+                    false));
+            method.maxStack += 1;
+        }
+    }
+
+    /**
+     * 添加方法
+     */
+    private void addAttchMethod() {
+        if (needAddAttach()) {
+            if (shouldOverwriteAttachMethod) {
+                //添加attachBaseContext方法
+                mLogger.debug(String.format("add attach method to %s", name));
+                if (isActivity()) {
+                    MethodVisitorUtil.addActivityAttach(mClassWriter);
+                } else if (isService()) {
+                    MethodVisitorUtil.addServiceAttach(mClassWriter);
+                } else if (isIntentService()) {
+                    MethodVisitorUtil.addIntentServiceAttach(mClassWriter);
+                }
+            }
+
+            if (needAddACMethod()) {
+                //添加applyOverrideConfiguration方法
+                mLogger.debug(String.format("add applyOverrideConfiguration method to %s", name));
+                MethodVisitorUtil.addApplyOverrideConfiguration(mClassWriter, className);
+            }
+        }
     }
 
     /**
@@ -145,5 +199,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         return className;
     }
 
-
+    public boolean isShouldOverwriteAttachMethod() {
+        return shouldOverwriteAttachMethod;
+    }
 }

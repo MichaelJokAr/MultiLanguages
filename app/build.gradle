@@ -33,5 +33,4 @@ dependencies {
 
 multiLanguages {
     enable = true
-    overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
 }

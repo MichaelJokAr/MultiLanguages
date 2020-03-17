@@ -3,6 +3,7 @@ package com.github.jokar.multilanguages.plugin
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import com.github.jokar.multilanguages.PluginExtension
+import jdk.internal.org.objectweb.asm.tree.ClassNode
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -179,6 +180,7 @@ class MultiLanguagesTransform extends Transform {
                     def classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
                     def cv = new ActivityServiceClassVisitor(classWriter, pluginExtension.overwriteClass)
+                    new ActivityServiceClassVisitorV3(classWriter, pluginExtension.overwriteClass)
                     classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     //
                     addAttachMethod(cv, entryName, classWriter)

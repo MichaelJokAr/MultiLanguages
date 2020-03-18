@@ -8,8 +8,14 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
+import org.objectweb.asm.Opcodes
+import org.objectweb.asm.tree.AbstractInsnNode
+import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.MethodNode
 import org.slf4j.LoggerFactory
 
+import java.util.function.Consumer
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -99,8 +105,9 @@ class MultiLanguagesTransform extends Transform {
                     def classNode = new ActivityServiceClassVisitorV3(classWriter, slf4jLogger)
 //                    classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
+                    classNode.accept(classWriter)
                     //添加方法
-                    addAttachMethod(classNode, name, classWriter)
+//                    addAttachMethod(cv, name, classWriter)
                     //
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -124,7 +131,7 @@ class MultiLanguagesTransform extends Transform {
      * @param name
      * @param classWriter
      */
-    private static void addAttachMethod(ActivityServiceClassVisitorV3 cv, name, ClassWriter classWriter) {
+    private static void addAttachMethod(ActivityServiceClassVisitor cv, name, ClassWriter classWriter) {
         if (cv.needAddAttach()) {
             if (cv.shouldOverwriteAttachMethod) {
                 println("add attach method to ${name}")
@@ -184,8 +191,9 @@ class MultiLanguagesTransform extends Transform {
                     def classNode = new ActivityServiceClassVisitorV3(classWriter, slf4jLogger)
 //                    classReader.accept(cv, ClassReader.EXPAND_FRAMES)
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
+                    classNode.accept(classWriter)
                     //
-                    addAttachMethod(classNode, entryName, classWriter)
+//                    addAttachMethod(cv, entryName, classWriter)
                     //
                     def code = classWriter.toByteArray()
                     jarOutputStream.write(code)
@@ -218,6 +226,7 @@ class MultiLanguagesTransform extends Transform {
                 && !name.startsWith("R\$")
                 && "R.class" != name
                 && "BuildConfig.class" != name
-                && !name.startsWith("android/support"))
+                && !name.startsWith("android/support")
+                && !name.startsWith("androidx/core/app"))
     }
 }

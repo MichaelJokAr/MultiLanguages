@@ -4,9 +4,13 @@ import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.ListIterator;
 
 /**
  * Create by JokAr. on 2019-07-08.
@@ -37,7 +41,6 @@ public class ActivityServiceClassVisitor extends ClassVisitor implements Opcodes
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
                                      String[] exceptions) {
-        MethodNode method = new MethodNode(access, name, descriptor, signature, exceptions);
 
         if (needAddAttach()) {
             hasACMethod = "applyOverrideConfiguration".equals(name);

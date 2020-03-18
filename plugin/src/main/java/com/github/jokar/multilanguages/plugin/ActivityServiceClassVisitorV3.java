@@ -48,7 +48,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
             hasACMethod = "applyOverrideConfiguration".equals(name);
             if ("attachBaseContext".equals(name)) {
                 shouldOverwriteAttachMethod = false;
-            } else if (isAndroidxActivity() && "applyOverrideConfiguration".equals(name)) {
+            } else if (isAndroidxActivity(superClassName) && "applyOverrideConfiguration".equals(name)) {
                 //是继承androidx.AppCompatActivity的activity,在 applyOverrideConfiguration
                 //添加 overrideConfiguration.setTo(this.getBaseContext().getResources().getConfiguration());
                 return new ApplyOverrideConfigurationMV(mClassWriter.visitMethod(access, name, descriptor,
@@ -58,44 +58,99 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
+    /**
+     * 添加super方法
+     *
+     * @param method
+     */
+    private void addSuperMethod(MethodNode method) {
+//        mLogger.error(insnNode.owner + " - " + insnNode.name + " - " + insnNode.desc);
+        if (isActivity(superClassName)) {
+            method.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    "com/github/jokar/multilanguages/library/MultiLanguage",
+                    "setLocal",
+                    "(Landroid/content/Context;)Landroid/content/Context;",
+                    false));
+            method.instructions.insert(new MethodInsnNode(Opcodes.INVOKESPECIAL,
+                    "android/app/Activity",
+                    "attachBaseContext",
+                    "(Landroid/content/Context;)V",
+                    false));
+        } else if (isService(superClassName)) {
+              method.instructions.insert(new MethodInsnNode(INVOKESTATIC,
+                      "com/github/jokar/multilanguages/library/MultiLanguage",
+                      "setLocal",
+                      "(Landroid/content/Context;)Landroid/content/Context;",
+                      false));
+              method.instructions.insert(new MethodInsnNode(INVOKESPECIAL,
+                      "android/app/Service",
+                      "attachBaseContext",
+                      "(Landroid/content/Context;)V",
+                      false));
+        } else if (isIntentService(superClassName)) {
+            method.instructions.insert(new MethodInsnNode(INVOKESTATIC,
+                    "com/github/jokar/multilanguages/library/MultiLanguage",
+                    "setLocal",
+                    "(Landroid/content/Context;)Landroid/content/Context;",
+                    false));
+            method.instructions.insert(new MethodInsnNode(INVOKESPECIAL,
+                    "android/app/IntentService",
+                    "attachBaseContext",
+                    "(Landroid/content/Context;)V",
+                    false));
+        }
+    }
+
     @Override
     public void visitEnd() {
         super.visitEnd();
-        replaceSuperMethod();
-//        addAttchMethod();
+
+        if (needAddAttach()) {
+            replaceSuperMethod();
+
+            addAttchMethod();
+        }
     }
 
     /**
      * 替换super方法
      */
     private void replaceSuperMethod() {
-        if (methods != null && !methods.isEmpty()) {
+        if (methods != null && !methods.isEmpty() && !shouldOverwriteAttachMethod) {
             for (MethodNode method : methods) {
-                ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
-                while (iterator.hasNext()) {
-                    AbstractInsnNode abstractInsnNode = iterator.next();
-                    if (abstractInsnNode.getOpcode() == Opcodes.INVOKESPECIAL) {
-                        //替换内容
-                        transformInvokeVirtual(method, (MethodInsnNode) abstractInsnNode);
+                if ("attachBaseContext".equals(method.name)) {
+                    boolean hasInvokespecial = false;
+                    ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
+                    while (iterator.hasNext()) {
+                        AbstractInsnNode abstractInsnNode = iterator.next();
+                        if (abstractInsnNode.getOpcode() == Opcodes.INVOKESPECIAL) {
+                            //替换内容
+                            hasInvokespecial = true;
+                            transformInvokeVirtual(method, (MethodInsnNode) abstractInsnNode);
+                            break;
+                        }
                     }
+                    //添加super方法
+                    if (!hasInvokespecial) {
+                        addSuperMethod(method);
+                    }
+                    break;
                 }
             }
         }
     }
 
-    private void transformInvokeVirtual(MethodNode method, MethodInsnNode insnNode) {
-        if (needAddAttach()
+    public void transformInvokeVirtual(MethodNode method, MethodInsnNode insnNode) {
+
+        if ((isActivity(insnNode.owner) || isService(insnNode.owner) || isIntentService(insnNode.owner))
                 && "attachBaseContext".equals(insnNode.name)
                 && "(Landroid/content/Context;)V".equals(insnNode.desc)) {
             mLogger.error(insnNode.owner + " - " + insnNode.name + " - " + insnNode.desc);
-//            method.instructions.insertBefore(insnNode, new LdcInsnNode(""));
-//            method.instructions.insertBefore(insnNode, new LdcInsnNode(method.name));
             method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
                     "com/github/jokar/multilanguages/library/MultiLanguage",
                     "setLocal",
                     "(Landroid/content/Context;)Landroid/content/Context;",
                     false));
-            method.maxStack += 1;
         }
     }
 
@@ -103,24 +158,22 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      * 添加方法
      */
     private void addAttchMethod() {
-        if (needAddAttach()) {
-            if (shouldOverwriteAttachMethod) {
-                //添加attachBaseContext方法
-                mLogger.debug(String.format("add attach method to %s", name));
-                if (isActivity()) {
-                    MethodVisitorUtil.addActivityAttach(mClassWriter);
-                } else if (isService()) {
-                    MethodVisitorUtil.addServiceAttach(mClassWriter);
-                } else if (isIntentService()) {
-                    MethodVisitorUtil.addIntentServiceAttach(mClassWriter);
-                }
+        if (shouldOverwriteAttachMethod) {
+            //添加attachBaseContext方法
+            mLogger.error(String.format("add attach method to %s", name));
+            if (isActivity(superClassName)) {
+                MethodVisitorUtil.addActivityAttach(mClassWriter);
+            } else if (isService(superClassName)) {
+                MethodVisitorUtil.addServiceAttach(mClassWriter);
+            } else if (isIntentService(superClassName)) {
+                MethodVisitorUtil.addIntentServiceAttach(mClassWriter);
             }
+        }
 
-            if (needAddACMethod()) {
-                //添加applyOverrideConfiguration方法
-                mLogger.debug(String.format("add applyOverrideConfiguration method to %s", name));
-                MethodVisitorUtil.addApplyOverrideConfiguration(mClassWriter, className);
-            }
+        if (needAddACMethod()) {
+            //添加applyOverrideConfiguration方法
+            mLogger.error(String.format("add applyOverrideConfiguration method to %s", name));
+            MethodVisitorUtil.addApplyOverrideConfiguration(mClassWriter, className);
         }
     }
 
@@ -130,7 +183,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      * @return
      */
     public boolean needAddAttach() {
-        return isActivity() || isService() || isIntentService();
+        return isActivity(superClassName) || isService(superClassName) || isIntentService(superClassName);
     }
 
     /**
@@ -139,7 +192,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      * @return
      */
     public boolean needAddACMethod() {
-        return isAndroidxActivity() && !hasACMethod;
+        return isAndroidxActivity(superClassName) && !hasACMethod;
     }
 
     /**
@@ -147,15 +200,14 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      *
      * @return
      */
-    public boolean isActivity() {
-        if (className == null || superClassName == null) {
+    public boolean isActivity(String className) {
+        if (className == null) {
             return false;
         }
-        return ("android/support/v4/app/FragmentActivity".equals(superClassName)
-                || "android/support/v7/app/AppCompatActivity".equals(superClassName)
-                || "android/app/Activity".equals(superClassName)
-                || isAndroidxActivity())
-                && !isAndroidxPackageName(); //排除androidx包里的
+        return ("android/support/v4/app/FragmentActivity".equals(className)
+                || "android/support/v7/app/AppCompatActivity".equals(className)
+                || "android/app/Activity".equals(className)
+                || isAndroidxActivity(className));
     }
 
     /**
@@ -163,36 +215,26 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
      *
      * @return
      */
-    private boolean isAndroidxActivity() {
-        if (superClassName == null) {
+    private boolean isAndroidxActivity(String className) {
+        if (className == null) {
             return false;
         }
-        return "androidx/appcompat/app/AppCompatActivity".equals(superClassName);
+        return "androidx/appcompat/app/AppCompatActivity".equals(className);
     }
 
-    /**
-     * 是否是androidx包名下类
-     *
-     * @return
-     */
-    public boolean isAndroidxPackageName() {
-        return className.contains("androidx/core/app");
-    }
 
-    public boolean isService() {
-        if (className == null || superClassName == null) {
+    public boolean isService(String className) {
+        if (className == null) {
             return false;
         }
-        return "android/app/Service".equals(superClassName)
-                && !isAndroidxPackageName(); //排除androidx包里的
+        return "android/app/Service".equals(className);
     }
 
-    public boolean isIntentService() {
-        if (className == null || superClassName == null) {
+    public boolean isIntentService(String className) {
+        if (className == null) {
             return false;
         }
-        return "android/app/IntentService".equals(superClassName)
-                && !isAndroidxPackageName(); //排除androidx包里的
+        return "android/app/IntentService".equals(className);
     }
 
     public String getClassName() {

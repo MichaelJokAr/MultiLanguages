@@ -45,10 +45,10 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
                                      String[] exceptions) {
         if (needAddAttach()) {
-            hasACMethod = name.equals("applyOverrideConfiguration");
-            if (name.equals("attachBaseContext")) {
+            hasACMethod = "applyOverrideConfiguration".equals(name);
+            if ("attachBaseContext".equals(name)) {
                 shouldOverwriteAttachMethod = false;
-            } else if (isAndroidxActivity() && name.equals("applyOverrideConfiguration")) {
+            } else if (isAndroidxActivity() && "applyOverrideConfiguration".equals(name)) {
                 //是继承androidx.AppCompatActivity的activity,在 applyOverrideConfiguration
                 //添加 overrideConfiguration.setTo(this.getBaseContext().getResources().getConfiguration());
                 return new ApplyOverrideConfigurationMV(mClassWriter.visitMethod(access, name, descriptor,
@@ -151,9 +151,9 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         if (className == null || superClassName == null) {
             return false;
         }
-        return (superClassName.equals("android/support/v4/app/FragmentActivity")
-                || superClassName.equals("android/support/v7/app/AppCompatActivity")
-                || superClassName.equals("android/app/Activity")
+        return ("android/support/v4/app/FragmentActivity".equals(superClassName)
+                || "android/support/v7/app/AppCompatActivity".equals(superClassName)
+                || "android/app/Activity".equals(superClassName)
                 || isAndroidxActivity())
                 && !isAndroidxPackageName(); //排除androidx包里的
     }
@@ -167,7 +167,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         if (superClassName == null) {
             return false;
         }
-        return superClassName.equals("androidx/appcompat/app/AppCompatActivity");
+        return "androidx/appcompat/app/AppCompatActivity".equals(superClassName);
     }
 
     /**
@@ -183,7 +183,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         if (className == null || superClassName == null) {
             return false;
         }
-        return superClassName.equals("android/app/Service")
+        return "android/app/Service".equals(superClassName)
                 && !isAndroidxPackageName(); //排除androidx包里的
     }
 
@@ -191,7 +191,7 @@ public class ActivityServiceClassVisitorV3 extends ClassNode implements Opcodes 
         if (className == null || superClassName == null) {
             return false;
         }
-        return superClassName.equals("android/app/IntentService")
+        return "android/app/IntentService".equals(superClassName)
                 && !isAndroidxPackageName(); //排除androidx包里的
     }
 

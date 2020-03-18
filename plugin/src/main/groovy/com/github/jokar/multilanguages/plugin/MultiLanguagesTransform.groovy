@@ -8,14 +8,8 @@ import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.AbstractInsnNode
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.MethodNode
 import org.slf4j.LoggerFactory
 
-import java.util.function.Consumer
 import java.util.jar.JarEntry
 import java.util.jar.JarFile
 import java.util.jar.JarOutputStream
@@ -101,13 +95,9 @@ class MultiLanguagesTransform extends Transform {
                 if (checkClassFile(name)) {
                     def classReader = new ClassReader(file.bytes)
                     def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-//                    def cv = new ActivityServiceClassVisitor(classWriter, pluginExtension.overwriteClass)
-                    def classNode = new ActivityServiceClassVisitorV3(classWriter, slf4jLogger)
-//                    classReader.accept(cv, ClassReader.EXPAND_FRAMES)
+                    def classNode = new ActivityServiceClassVisitor(classWriter, slf4jLogger)
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
                     classNode.accept(classWriter)
-                    //添加方法
-//                    addAttachMethod(cv, name, classWriter)
                     //
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
@@ -125,35 +115,6 @@ class MultiLanguagesTransform extends Transform {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
-    /**
-     * 添加方法
-     * @param cv
-     * @param name
-     * @param classWriter
-     */
-    private static void addAttachMethod(ActivityServiceClassVisitor cv, name, ClassWriter classWriter) {
-        if (cv.needAddAttach()) {
-            if (cv.shouldOverwriteAttachMethod) {
-                println("add attach method to ${name}")
-                //添加attachBaseContext方法
-                if (cv.activity) {
-                    MethodVisitorUtil.addActivityAttach(classWriter)
-                } else if (cv.service) {
-                    MethodVisitorUtil.addServiceAttach(classWriter)
-                } else if (cv.intentService) {
-                    MethodVisitorUtil.addIntentServiceAttach(classWriter)
-                }
-            } else {
-                slf4jLogger.error("skip ${name}, you should overwrite attachBaseContext by your self, " +
-                        "or you can add this full class name to plugin extension.overwriteClass")
-            }
-            //添加applyOverrideConfiguration方法
-            if (cv.needAddACMethod()) {
-                println("add applyOverrideConfiguration method to ${name}")
-                MethodVisitorUtil.addApplyOverrideConfiguration(classWriter, cv.className)
-            }
-        }
-    }
 
     /**
      * 处理JarInput
@@ -187,13 +148,9 @@ class MultiLanguagesTransform extends Transform {
                     jarOutputStream.putNextEntry(zipEntry)
                     def classReader = new ClassReader(IOUtils.toByteArray(inputStream))
                     def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
-//                    def cv = new ActivityServiceClassVisitor(classWriter, pluginExtension.overwriteClass)
-                    def classNode = new ActivityServiceClassVisitorV3(classWriter, slf4jLogger)
-//                    classReader.accept(cv, ClassReader.EXPAND_FRAMES)
+                    def classNode = new ActivityServiceClassVisitor(classWriter, slf4jLogger)
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
                     classNode.accept(classWriter)
-                    //
-//                    addAttachMethod(cv, entryName, classWriter)
                     //
                     def code = classWriter.toByteArray()
                     jarOutputStream.write(code)

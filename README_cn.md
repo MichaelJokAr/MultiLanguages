@@ -78,28 +78,12 @@
 
 以上就完成了初始化了，
 
-----
 
-### **```attachBaseContext```方法已被重写过？**
-在v0.0.7版本去除了强制重写```attachBaseContext```方法的逻辑，
-
-- 如果需要修改该类则在该类原来重写了该方法需要手动加上
-
-    ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
-
-- 如果需要强制重写可以在在插件配置里```overwriteClass```里加上全路径包名后插件覆盖重写 
-
-    ```
-        multiLanguages {
-        enable = true
-        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
-        }
-    ```
-
-### **locales列表**
-
-https://github.com/championswimmer/android-locales
+### 其他： [locales列表](https://github.com/championswimmer/android-locales)
 
 
-----
+---
+### 效果图
+
+
 ![效果图](./image/sample.gif)

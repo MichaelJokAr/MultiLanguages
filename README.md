@@ -77,30 +77,12 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
     sample of save multi-language select [LocalManageUtil](./app/src/main/java/com/github/jokar/multilanguages/utils/LocalManageUtil.java)
 
 
-then the init is done
-
-----
-
-### **```attachBaseContext``` method was been rewritten?**
-in version v0.0.7 removed the logic for forcing the override of the ```attachBaseContext``` method.
-
-- If you want to support multi-language in this class it needs to be added manually
-
-    ``` super.attachBaseContext(MultiLanguage.setLocal(newBase));```
-
-- Or if you need to force a rewrite, you can add the full path package name to the ```overwriteClass``` in the plugin configuration.
-
-    ```
-        multiLanguages {
-        enable = true
-        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"]
-        }
-    ```
-
-### **locales list**
-
-https://github.com/championswimmer/android-locales
+**then is done**
 
 
-----
+
+### Other: [locales list](https://github.com/championswimmer/android-locales)
+
+---
+### **sample image**
 ![sample-image](./image/sample.gif)

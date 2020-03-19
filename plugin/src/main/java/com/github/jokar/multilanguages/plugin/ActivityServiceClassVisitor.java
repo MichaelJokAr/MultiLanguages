@@ -11,6 +11,11 @@ import org.slf4j.Logger;
 
 import java.util.ListIterator;
 
+import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isActivity;
+import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isAndroidxActivity;
+import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isIntentService;
+import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isService;
+
 /**
  * Create by JokAr. on 2019-07-08.
  */
@@ -58,48 +63,6 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
-    /**
-     * 添加super方法
-     *
-     * @param method
-     */
-    private void addSuperMethod(MethodNode method) {
-//        mLogger.error(insnNode.owner + " - " + insnNode.name + " - " + insnNode.desc);
-        if (isActivity(superClassName)) {
-            method.instructions.insert(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    "com/github/jokar/multilanguages/library/MultiLanguage",
-                    "setLocal",
-                    "(Landroid/content/Context;)Landroid/content/Context;",
-                    false));
-            method.instructions.insert(new MethodInsnNode(Opcodes.INVOKESPECIAL,
-                    "android/app/Activity",
-                    "attachBaseContext",
-                    "(Landroid/content/Context;)V",
-                    false));
-        } else if (isService(superClassName)) {
-              method.instructions.insert(new MethodInsnNode(INVOKESTATIC,
-                      "com/github/jokar/multilanguages/library/MultiLanguage",
-                      "setLocal",
-                      "(Landroid/content/Context;)Landroid/content/Context;",
-                      false));
-              method.instructions.insert(new MethodInsnNode(INVOKESPECIAL,
-                      "android/app/Service",
-                      "attachBaseContext",
-                      "(Landroid/content/Context;)V",
-                      false));
-        } else if (isIntentService(superClassName)) {
-            method.instructions.insert(new MethodInsnNode(INVOKESTATIC,
-                    "com/github/jokar/multilanguages/library/MultiLanguage",
-                    "setLocal",
-                    "(Landroid/content/Context;)Landroid/content/Context;",
-                    false));
-            method.instructions.insert(new MethodInsnNode(INVOKESPECIAL,
-                    "android/app/IntentService",
-                    "attachBaseContext",
-                    "(Landroid/content/Context;)V",
-                    false));
-        }
-    }
 
     @Override
     public void visitEnd() {
@@ -116,23 +79,18 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
      * 替换super方法
      */
     private void replaceSuperMethod() {
+        //判断是否重写了attachBaseContext 方法
         if (methods != null && !methods.isEmpty() && !shouldOverwriteAttachMethod) {
             for (MethodNode method : methods) {
                 if ("attachBaseContext".equals(method.name)) {
-                    boolean hasInvokespecial = false;
                     ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
                     while (iterator.hasNext()) {
                         AbstractInsnNode abstractInsnNode = iterator.next();
                         if (abstractInsnNode.getOpcode() == Opcodes.INVOKESPECIAL) {
                             //替换内容
-                            hasInvokespecial = true;
                             transformInvokeVirtual(method, (MethodInsnNode) abstractInsnNode);
                             break;
                         }
-                    }
-                    //添加super方法
-                    if (!hasInvokespecial) {
-                        addSuperMethod(method);
                     }
                     break;
                 }
@@ -145,7 +103,7 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
         if ((isActivity(insnNode.owner) || isService(insnNode.owner) || isIntentService(insnNode.owner))
                 && "attachBaseContext".equals(insnNode.name)
                 && "(Landroid/content/Context;)V".equals(insnNode.desc)) {
-            mLogger.error(insnNode.owner + " - " + insnNode.name + " - " + insnNode.desc);
+            mLogger.error("overwride class "+ insnNode.owner + " method: " + insnNode.name );
             method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
                     "com/github/jokar/multilanguages/library/MultiLanguage",
                     "setLocal",
@@ -195,53 +153,4 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
         return isAndroidxActivity(superClassName) && !hasACMethod;
     }
 
-    /**
-     * 是否是Activity类
-     *
-     * @return
-     */
-    public boolean isActivity(String className) {
-        if (className == null) {
-            return false;
-        }
-        return ("android/support/v4/app/FragmentActivity".equals(className)
-                || "android/support/v7/app/AppCompatActivity".equals(className)
-                || "android/app/Activity".equals(className)
-                || isAndroidxActivity(className));
-    }
-
-    /**
-     * 是否是继承androidx.AppCompatActivity activity
-     *
-     * @return
-     */
-    private boolean isAndroidxActivity(String className) {
-        if (className == null) {
-            return false;
-        }
-        return "androidx/appcompat/app/AppCompatActivity".equals(className);
-    }
-
-
-    public boolean isService(String className) {
-        if (className == null) {
-            return false;
-        }
-        return "android/app/Service".equals(className);
-    }
-
-    public boolean isIntentService(String className) {
-        if (className == null) {
-            return false;
-        }
-        return "android/app/IntentService".equals(className);
-    }
-
-    public String getClassName() {
-        return className;
-    }
-
-    public boolean isShouldOverwriteAttachMethod() {
-        return shouldOverwriteAttachMethod;
-    }
 }

@@ -174,4 +174,46 @@ public class MethodVisitorUtil {
                 "setTo", "(Landroid/content/res/Configuration;)V", false);
         mv.visitLabel(l1);
     }
+
+    /**
+     * 是否是Activity类
+     *
+     * @return
+     */
+    public static boolean isActivity(String className) {
+        if (className == null) {
+            return false;
+        }
+        return ("android/support/v4/app/FragmentActivity".equals(className)
+                || "android/support/v7/app/AppCompatActivity".equals(className)
+                || "android/app/Activity".equals(className)
+                || isAndroidxActivity(className));
+    }
+
+    /**
+     * 是否是继承androidx.AppCompatActivity activity
+     *
+     * @return
+     */
+    public static boolean isAndroidxActivity(String className) {
+        if (className == null) {
+            return false;
+        }
+        return "androidx/appcompat/app/AppCompatActivity".equals(className);
+    }
+
+
+    public static boolean isService(String className) {
+        if (className == null) {
+            return false;
+        }
+        return "android/app/Service".equals(className);
+    }
+
+    public static boolean isIntentService(String className) {
+        if (className == null) {
+            return false;
+        }
+        return "android/app/IntentService".equals(className);
+    }
 }

@@ -18,8 +18,8 @@ public class ApplyOverrideConfigurationMV extends MethodVisitor {
     }
 
     @Override
-    public void visitEnd() {
-        super.visitEnd();
-
+    public void visitCode() {
+        MethodVisitorUtil.addSetTo(mv, className);
+        super.visitCode();
     }
 }

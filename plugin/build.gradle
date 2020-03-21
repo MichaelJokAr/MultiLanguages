@@ -28,4 +28,4 @@ publish {
     website = 'https://github.com/MichaelJokAr/MultiLanguages'
 }
 
-apply from: 'maven.gradle'
+//apply from: 'maven.gradle'

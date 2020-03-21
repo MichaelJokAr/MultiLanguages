@@ -1,4 +1,6 @@
 ## CHANGELOG
+### v0.0.8
+- 解决```attachBaseContext```方法被重写问题
 
 ### v0.0.7
 - 去除强制覆盖重写```attachBaseContext```方法逻辑。

@@ -7,12 +7,14 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.slf4j.Logger;
 
 import java.util.ListIterator;
 
 import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isActivity;
 import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isAndroidxActivity;
+import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isApplication;
 import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isIntentService;
 import static com.github.jokar.multilanguages.plugin.MethodVisitorUtil.isService;
 
@@ -23,11 +25,18 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
     private String superClassName;
     private String className;
     /**
-     * 是否有applyOverrideConfiguration方法
+     * 是否可以新增applyOverrideConfiguration方法
      */
-    private boolean hasACMethod;
-    private Logger mLogger;
+    private boolean shouldOverwriteACMethod = true;
+    /**
+     * 是否可以新增onCreate方法
+     */
+    private boolean shouldOverwriteAppOnCreateMethod = true;
+    /**
+     * 是否可以新增attachBaseContext方法
+     */
     private boolean shouldOverwriteAttachMethod = true;
+    private Logger mLogger;
     private ClassWriter mClassWriter;
 
     public ActivityServiceClassVisitor(ClassWriter cv, Logger logger) {
@@ -50,13 +59,17 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature,
                                      String[] exceptions) {
         if (needAddAttach()) {
-            hasACMethod = "applyOverrideConfiguration".equals(name);
             if ("attachBaseContext".equals(name)) {
                 shouldOverwriteAttachMethod = false;
             } else if (isAndroidxActivity(superClassName) && "applyOverrideConfiguration".equals(name)) {
+                shouldOverwriteACMethod = false;
                 //是继承androidx.AppCompatActivity的activity,在 applyOverrideConfiguration
                 //添加 overrideConfiguration.setTo(this.getBaseContext().getResources().getConfiguration());
                 return new ApplyOverrideConfigurationMV(mClassWriter.visitMethod(access, name, descriptor,
+                        signature, exceptions), this.className);
+            } else if (isApplication(superClassName) && "onCreate".equals(name)) {
+                shouldOverwriteAppOnCreateMethod = false;
+                return new ApplicationOnCreateMV(mClassWriter.visitMethod(access, name, descriptor,
                         signature, exceptions), this.className);
             }
         }
@@ -69,18 +82,31 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
         super.visitEnd();
 
         if (needAddAttach()) {
-            replaceSuperMethod();
-
-            addAttchMethod();
+            if (shouldOverwriteAttachMethod) {
+                // 添加attachBaseContext方法
+                addAttachMethod();
+            } else {
+                // attachBaseContext方法复写涉及指令排序，使用tree api实现替换
+                replaceAttachMethod();
+            }
+            if (needAddACMethod()) {
+                // 添加applyOverrideConfiguration方法
+                mLogger.error(String.format("add applyOverrideConfiguration method to %s", name));
+                MethodVisitorUtil.addApplyOverrideConfiguration(mClassWriter, className);
+            }
+            if (needAddAppOnCreateMethod()) {
+                // 添加onCreate方法
+                mLogger.error(String.format("add onCreate method to %s", name));
+                MethodVisitorUtil.addAppOnCreate(mClassWriter, className);
+            }
         }
     }
 
     /**
-     * 替换super方法
+     * 替换attachBaseContext方法
      */
-    private void replaceSuperMethod() {
-        //判断是否重写了attachBaseContext 方法
-        if (methods != null && !methods.isEmpty() && !shouldOverwriteAttachMethod) {
+    private void replaceAttachMethod() {
+        if (methods != null && !methods.isEmpty()) {
             for (MethodNode method : methods) {
                 if ("attachBaseContext".equals(method.name)) {
                     ListIterator<AbstractInsnNode> iterator = method.instructions.iterator();
@@ -99,49 +125,64 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
     }
 
     public void transformInvokeVirtual(MethodNode method, MethodInsnNode insnNode) {
-
-        if ((isActivity(insnNode.owner) || isService(insnNode.owner) || isIntentService(insnNode.owner))
-                && "attachBaseContext".equals(insnNode.name)
+        if ("attachBaseContext".equals(insnNode.name)
                 && "(Landroid/content/Context;)V".equals(insnNode.desc)) {
-            mLogger.error("overwride class "+ insnNode.owner + " method: " + insnNode.name );
-            method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    "com/github/jokar/multilanguages/library/MultiLanguage",
-                    "setLocal",
-                    "(Landroid/content/Context;)Landroid/content/Context;",
-                    false));
-        }
-    }
-
-    /**
-     * 添加方法
-     */
-    private void addAttchMethod() {
-        if (shouldOverwriteAttachMethod) {
-            //添加attachBaseContext方法
-            mLogger.error(String.format("add attach method to %s", name));
-            if (isActivity(superClassName)) {
-                MethodVisitorUtil.addActivityAttach(mClassWriter);
-            } else if (isService(superClassName)) {
-                MethodVisitorUtil.addServiceAttach(mClassWriter);
-            } else if (isIntentService(superClassName)) {
-                MethodVisitorUtil.addIntentServiceAttach(mClassWriter);
+            if (isActivity(insnNode.owner) || isService(insnNode.owner) || isIntentService(insnNode.owner)) {
+                mLogger.error("overwride class " + className+ " method: " + insnNode.name);
+                method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        "com/github/jokar/multilanguages/library/MultiLanguage",
+                        "setLocale",
+                        "(Landroid/content/Context;)Landroid/content/Context;",
+                        false));
+            } else if (isApplication(insnNode.owner)) {
+                mLogger.error("overwride class " + className + " method: " + insnNode.name);
+                method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        "com/github/jokar/multilanguages/library/MultiLanguage",
+                        "initCache",
+                        "(Landroid/content/Context;)V",
+                        false));
+                method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        "com/github/jokar/multilanguages/library/MultiLanguage",
+                        "saveSystemCurrentLanguage",
+                        "()V",
+                        false));
+                method.instructions.insertBefore(insnNode, new VarInsnNode(ALOAD, 0));
+                method.instructions.insertBefore(insnNode, new VarInsnNode(ALOAD, 1));
+                method.instructions.insertBefore(insnNode, new MethodInsnNode(Opcodes.INVOKESTATIC,
+                        "com/github/jokar/multilanguages/library/MultiLanguage",
+                        "setLocale",
+                        "(Landroid/content/Context;)Landroid/content/Context;",
+                        false));
             }
         }
+    }
 
-        if (needAddACMethod()) {
-            //添加applyOverrideConfiguration方法
-            mLogger.error(String.format("add applyOverrideConfiguration method to %s", name));
-            MethodVisitorUtil.addApplyOverrideConfiguration(mClassWriter, className);
+    /**
+     * 添加attachBaseContext方法
+     */
+    private void addAttachMethod() {
+        mLogger.error(String.format("add attach method to %s", name));
+        if (isActivity(superClassName)) {
+            MethodVisitorUtil.addActivityAttach(mClassWriter);
+        } else if (isService(superClassName)) {
+            MethodVisitorUtil.addServiceAttach(mClassWriter);
+        } else if (isIntentService(superClassName)) {
+            MethodVisitorUtil.addIntentServiceAttach(mClassWriter);
+        } else if (isApplication(superClassName)) {
+            MethodVisitorUtil.addApplicationAttach(mClassWriter, className);
         }
     }
 
     /**
-     * 是否需要添加
+     * 是否需要添加attachBaseContext
      *
      * @return
      */
     public boolean needAddAttach() {
-        return isActivity(superClassName) || isService(superClassName) || isIntentService(superClassName);
+        return isActivity(superClassName) ||
+                isService(superClassName) ||
+                isIntentService(superClassName) ||
+                isApplication(superClassName);
     }
 
     /**
@@ -150,7 +191,10 @@ public class ActivityServiceClassVisitor extends ClassNode implements Opcodes {
      * @return
      */
     public boolean needAddACMethod() {
-        return isAndroidxActivity(superClassName) && !hasACMethod;
+        return isAndroidxActivity(superClassName) && shouldOverwriteACMethod;
     }
 
+    public boolean needAddAppOnCreateMethod() {
+        return isApplication(superClassName) && shouldOverwriteAppOnCreateMethod;
+    }
 }

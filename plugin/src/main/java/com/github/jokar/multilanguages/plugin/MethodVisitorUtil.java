@@ -34,7 +34,7 @@ public class MethodVisitorUtil {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage",
-                "setLocal", "(Landroid/content/Context;)Landroid/content/Context;",
+                "setLocale", "(Landroid/content/Context;)Landroid/content/Context;",
                 false);
         mv.visitMethodInsn(INVOKESPECIAL, "android/app/Activity", "attachBaseContext",
                 "(Landroid/content/Context;)V", false);
@@ -63,7 +63,7 @@ public class MethodVisitorUtil {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage",
-                "setLocal", "(Landroid/content/Context;)Landroid/content/Context;", false);
+                "setLocale", "(Landroid/content/Context;)Landroid/content/Context;", false);
         mv.visitMethodInsn(INVOKESPECIAL, "android/app/IntentService", "attachBaseContext",
                 "(Landroid/content/Context;)V", false);
         Label l1 = new Label();
@@ -91,7 +91,7 @@ public class MethodVisitorUtil {
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage",
-                "setLocal", "(Landroid/content/Context;)Landroid/content/Context;",
+                "setLocale", "(Landroid/content/Context;)Landroid/content/Context;",
                 false);
         mv.visitMethodInsn(INVOKESPECIAL, "android/app/Service", "attachBaseContext",
                 "(Landroid/content/Context;)V", false);
@@ -104,6 +104,57 @@ public class MethodVisitorUtil {
                 null, l0, l2, 1);
         mv.visitMaxs(2, 2);
         mv.visitEnd();
+    }
+
+    public static void addApplicationAttach(ClassWriter cw, String className) {
+        MethodVisitor mv = cw.visitMethod(ACC_PROTECTED, "attachBaseContext", "(Landroid/content/Context;)V", null, null);
+        mv.visitCode();
+        Label l0 = new Label();
+        mv.visitLabel(l0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage", "initCache", "(Landroid/content/Context;)V", false);
+        Label l1 = new Label();
+        mv.visitLabel(l1);
+        mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage", "saveSystemCurrentLanguage", "()V", false);
+        Label l2 = new Label();
+        mv.visitLabel(l2);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitVarInsn(ALOAD, 1);
+        mv.visitMethodInsn(INVOKESPECIAL, "android/app/Application", "attachBaseContext", "(Landroid/content/Context;)V", false);
+        Label l3 = new Label();
+        mv.visitLabel(l3);
+        mv.visitInsn(RETURN);
+        Label l4 = new Label();
+        mv.visitLabel(l4);
+        mv.visitLocalVariable("this", classDescriptor(className), null, l0, l4, 0);
+        mv.visitLocalVariable("base", "Landroid/content/Context;", null, l0, l4, 1);
+        mv.visitMaxs(2, 2);
+        mv.visitEnd();
+    }
+
+    public static void addAppOnCreate(ClassWriter cw, String className) {
+        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "onCreate", "()V", null, null);
+        mv.visitCode();
+        Label l0 = new Label();
+        mv.visitLabel(l0);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESPECIAL, "android/app/Application", "onCreate", "()V", false);
+        Label l1 = new Label();
+        mv.visitLabel(l1);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage", "setApplicationLocale", "(Landroid/content/Context;)V", false);
+        Label l2 = new Label();
+        mv.visitLabel(l2);
+        mv.visitInsn(RETURN);
+        Label l3 = new Label();
+        mv.visitLabel(l3);
+        mv.visitLocalVariable("this", classDescriptor(className), null, l0, l3, 0);
+        mv.visitMaxs(1, 1);
+        mv.visitEnd();
+    }
+
+    private static String classDescriptor(String className) {
+        return String.format("L%s;", className);
     }
 
     /**
@@ -144,7 +195,7 @@ public class MethodVisitorUtil {
         mv.visitInsn(RETURN);
         Label l4 = new Label();
         mv.visitLabel(l4);
-        mv.visitLocalVariable("this", "L" + className + ";", null, l0, l4, 0);
+        mv.visitLocalVariable("this", classDescriptor(className), null, l0, l4, 0);
         mv.visitLocalVariable("overrideConfiguration", "Landroid/content/res/Configuration;",
                 null, l0, l4, 1);
         mv.visitMaxs(2, 2);
@@ -173,6 +224,13 @@ public class MethodVisitorUtil {
         mv.visitMethodInsn(INVOKEVIRTUAL, "android/content/res/Configuration",
                 "setTo", "(Landroid/content/res/Configuration;)V", false);
         mv.visitLabel(l1);
+    }
+
+    public static void addOnCreate(MethodVisitor mv) {
+        Label l0 = new Label();
+        mv.visitLabel(l0);
+        mv.visitVarInsn(ALOAD, 0);
+        mv.visitMethodInsn(INVOKESTATIC, "com/github/jokar/multilanguages/library/MultiLanguage", "setApplicationLocale", "(Landroid/content/Context;)V", false);
     }
 
     /**
@@ -215,5 +273,13 @@ public class MethodVisitorUtil {
             return false;
         }
         return "android/app/IntentService".equals(className);
+    }
+
+    public static boolean isApplication(String className) {
+        if (className == null) {
+            return false;
+        }
+        return "android/app/Application".equals(className) ||
+                "android.support.multidex.MultiDexApplication".equals(className);
     }
 }

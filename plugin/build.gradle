@@ -1,6 +1,7 @@
 apply plugin: 'java-library'
 apply plugin: 'groovy'
 apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'maven'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -26,6 +27,24 @@ publish {
     publishVersion = "$version"
     desc = 'android multi language support (support android O+)'
     website = 'https://github.com/MichaelJokAr/MultiLanguages'
+}
+
+uploadArchives {
+    repositories.mavenDeployer {
+        repository(url: uri('../repo'))
+        pom.groupId = 'com.github.jokar'
+        pom.artifactId = 'multi-languages.plugin'
+        pom.version = '0.0.1'
+    }
+}
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 //apply from: 'maven.gradle'

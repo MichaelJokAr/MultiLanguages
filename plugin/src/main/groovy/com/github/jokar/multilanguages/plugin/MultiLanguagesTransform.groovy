@@ -55,7 +55,7 @@ class MultiLanguagesTransform extends Transform {
         println("|                     Multi Languages Plugin START                            |")
         println("+-----------------------------------------------------------------------------+")
         def startTime = System.currentTimeMillis()
-        //
+        // 获取输入输出目录
         def inputs = transformInvocation.inputs
         def outputProvider = transformInvocation.outputProvider
         //删除之前的输出
@@ -98,7 +98,7 @@ class MultiLanguagesTransform extends Transform {
                     def classNode = new ActivityServiceClassVisitor(classWriter, slf4jLogger)
                     classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
                     classNode.accept(classWriter)
-                    //
+                    // 输出转换后的代码
                     byte[] code = classWriter.toByteArray()
                     FileOutputStream fos = new FileOutputStream(
                             file.parentFile.absolutePath + File.separator + name)

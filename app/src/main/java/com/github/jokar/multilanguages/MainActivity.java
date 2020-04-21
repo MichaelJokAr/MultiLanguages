@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.github.jokar.multilanguages.library.MultiLanguage;
 import com.github.jokar.multilanguages.utils.LocalManageUtil;
 
 public class MainActivity extends BaseActivity {
@@ -79,11 +80,11 @@ public class MainActivity extends BaseActivity {
     @SuppressLint("StringFormatInvalid")
     private void setValue() {
         String string = getString(R.string.system_language,
-                LocalManageUtil.getSystemLocale(this).getDisplayLanguage());
+                MultiLanguage.getSystemCurrentLocale().getDisplayLanguage());
         tvSystemLanguage.setText(string);
         //
         tvUserSelectLanguage.setText(getString(R.string.user_select_language,
-                LocalManageUtil.getSelectLanguage(this)));
+                LocalManageUtil.getSelectLanguageName(this)));
         //
         tvValue.setText(getString(R.string.tv3_value));
         //

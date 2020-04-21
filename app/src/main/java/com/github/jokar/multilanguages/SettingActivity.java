@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.TextView;
 
+import com.github.jokar.multilanguages.library.MultiLanguage;
 import com.github.jokar.multilanguages.utils.LocalManageUtil;
 
 public class SettingActivity extends BaseActivity {
@@ -20,7 +21,7 @@ public class SettingActivity extends BaseActivity {
         setContentView(R.layout.activity_setting);
         mUserSelect = findViewById(R.id.tv_user_select);
         mUserSelect.setText(getString(R.string.user_select_language,
-                LocalManageUtil.getSelectLanguage(this)));
+                LocalManageUtil.getSelectLanguageName(this)));
         //
         setClick();
     }
@@ -30,8 +31,8 @@ public class SettingActivity extends BaseActivity {
         context.startActivity(intent);
     }
 
-    private void selectLanguage(int select) {
-        LocalManageUtil.saveSelectLanguage(this, select);
+    private void selectLanguage(MultiLanguage.AppLanguage appLanguage) {
+        MultiLanguage.saveAppLanguage(this, appLanguage);
         MainActivity.reStart(this);
     }
 
@@ -40,28 +41,28 @@ public class SettingActivity extends BaseActivity {
         findViewById(R.id.btn_auto).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectLanguage(0);
+                selectLanguage(MultiLanguage.AppLanguage.FOLLOW_SYSTEM);
             }
         });
         //简体中文
         findViewById(R.id.btn_cn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectLanguage(1);
+                selectLanguage(MultiLanguage.AppLanguage.CHINA);
             }
         });
         //繁体中文
         findViewById(R.id.btn_traditional).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectLanguage(2);
+                selectLanguage(MultiLanguage.AppLanguage.TAIWAN);
             }
         });
         //english
         findViewById(R.id.btn_en).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                selectLanguage(3);
+                selectLanguage(MultiLanguage.AppLanguage.ENGLISH);
             }
         });
     }

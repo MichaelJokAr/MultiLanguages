@@ -1,2 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest package="com.github.jokar.multilanguages.library"></manifest>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.github.jokar.multilanguages.library">
+
+    <application>
+        <provider
+            android:name=".MultiLanguageProvider"
+            android:authorities="com.github.jokar.multilanguages.library"
+            android:enabled="true"
+            android:exported="false" />
+    </application>
+</manifest>

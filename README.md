@@ -29,9 +29,7 @@ Uses the Transform API to compile instrumentation to achieve ```attachBaseContex
     ```
     multiLanguages {
         //set plugin is enable( default)
-        enable = true
-        //add forced reorganization of the attachBaseContext method class (If the attachBaseContext method has been overridden in the class, the override will not be overridden by default)
-        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"] 
+        enable = true 
     }
     ```
 - import ```Library```

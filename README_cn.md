@@ -31,8 +31,6 @@
     multiLanguages {
         //可以配置开关来控制是否重写(插件会耗时一部分的编译时间)
         enable = true
-        //配置强制重写attachBaseContext方法类（如果类里已经重写了attachBaseContext方法，默认不会覆盖重写）
-        overwriteClass = ["com.github.jokar.multilanguages.BaseActivity"] 
     }
     ```
 - 导入```Library```

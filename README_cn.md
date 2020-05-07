@@ -14,9 +14,13 @@
 - **不支持Instant Run**
 
 ### **使用**
-- multi-language.plugin  [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
 
-- multi-languages [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages/images/download.svg) ](https://bintray.com/a10188755550/maven/multi-languages/_latestVersion)
+#### Lastest version
+modlue|multi-language.plugin|multi-languages
+---|---|---|
+version| [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)| [![Download](https://api.bintray.com/packages/a10188755550/maven/multi-languages.plugin/images/download.svg)](https://bintray.com/a10188755550/maven/multi-languages.plugin/_latestVersion)
+
+#### 导入
 
 - 引入gradle plugin
     ```

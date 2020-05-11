@@ -184,6 +184,6 @@ class MultiLanguagesTransform extends Transform {
                 && "R.class" != name
                 && "BuildConfig.class" != name
                 && !name.startsWith("android/support")
-                && !name.startsWith("androidx/core/app"))
+                && !name.startsWith("androidx/"))
     }
 }

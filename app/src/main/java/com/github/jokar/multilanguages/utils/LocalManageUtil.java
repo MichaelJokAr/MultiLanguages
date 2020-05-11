@@ -3,7 +3,6 @@ package com.github.jokar.multilanguages.utils;
 import android.content.Context;
 
 import com.github.jokar.multilanguages.R;
-import com.github.jokar.multilanguages.library.LanguageCache;
 import com.github.jokar.multilanguages.library.MultiLanguage;
 
 public class LocalManageUtil {

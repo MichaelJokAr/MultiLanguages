@@ -184,6 +184,16 @@ class MultiLanguagesTransform extends Transform {
                 && "R.class" != name
                 && "BuildConfig.class" != name
                 && !name.startsWith("android/support")
-                && !name.startsWith("androidx/"))
+                && !name.startsWith("androidx/")
+                && !excludePackage(name))
+    }
+    /**
+     * 是否是自定义包名排除
+     * @param name
+     * @return
+     */
+    boolean excludePackage(String name) {
+        return pluginExtension.excludePackage.contains(name.replaceAll("/",
+                "."))
     }
 }

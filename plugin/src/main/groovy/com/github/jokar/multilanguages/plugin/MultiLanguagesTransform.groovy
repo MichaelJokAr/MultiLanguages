@@ -40,7 +40,7 @@ class MultiLanguagesTransform extends Transform {
 
     @Override
     boolean isIncremental() {
-        return false
+        return true
     }
 
     @Override
@@ -56,10 +56,12 @@ class MultiLanguagesTransform extends Transform {
         println("+-----------------------------------------------------------------------------+")
         def startTime = System.currentTimeMillis()
         //
+        def isIncremental = transformInvocation.isIncremental()
         def inputs = transformInvocation.inputs
         def outputProvider = transformInvocation.outputProvider
+        println("+------------------------" + "isIncremental:" + isIncremental + "----------------------------------+")
         //删除之前的输出
-        if (outputProvider != null) {
+        if (outputProvider != null && !isIncremental) {
             outputProvider.deleteAll()
         }
 
@@ -67,12 +69,12 @@ class MultiLanguagesTransform extends Transform {
             //遍历directoryInputs
             input.directoryInputs.each { DirectoryInput directoryInput ->
                 //处理DirectoryInput
-                handleDirectoryInput(directoryInput, outputProvider)
+                handleDirectoryInput(directoryInput, outputProvider, isIncremental)
             }
             //遍历jarInputs
             input.jarInputs.each { JarInput jarInput ->
                 //处理JarInput
-                handleJarInput(jarInput, outputProvider)
+                handleJarInput(jarInput, outputProvider, isIncremental)
             }
         }
         //
@@ -82,6 +84,63 @@ class MultiLanguagesTransform extends Transform {
         println("|                            Plugin cost ： $cost s                           |")
         println("+-----------------------------------------------------------------------------+")
     }
+
+    void handleDirectoryInput(DirectoryInput directoryInput, TransformOutputProvider outputProvider, boolean isIncremental) {
+        if (isIncremental) {
+            File dest = outputProvider.getContentLocation(directoryInput.getName(),
+                    directoryInput.getContentTypes(), directoryInput.getScopes(),
+                    Format.DIRECTORY)
+            FileUtils.forceMkdir(dest)
+            String srcDirPath = directoryInput.getFile().getAbsolutePath()
+            String destDirPath = dest.getAbsolutePath()
+            Map<File, Status> fileStatusMap = directoryInput.getChangedFiles()
+            for (Map.Entry<File, Status> changedFile : fileStatusMap.entrySet()) {
+                Status status = changedFile.getValue()
+                File inputFile = changedFile.getKey()
+                String destFilePath = inputFile.getAbsolutePath().replace(srcDirPath, destDirPath);
+                File destFile = new File(destFilePath)
+                switch (status) {
+                    case Status.NOTCHANGED:
+                        break
+                    case Status.REMOVED:
+                        if (destFile.exists()) {
+                            //noinspection ResultOfMethodCallIgnored
+                            destFile.delete()
+                        }
+                        break
+                    case Status.ADDED:
+                    case Status.CHANGED:
+                        try {
+                            FileUtils.touch(destFile)
+                        } catch (IOException ignored) {
+                        }
+                        def file = inputFile
+                        def name = file.name
+                        if (checkClassFile(name)) {
+                            def classReader = new ClassReader(file.bytes)
+                            def classWriter = new ClassWriter(classReader, ClassWriter.COMPUTE_MAXS)
+                            def classNode = new ActivityServiceClassVisitor(classWriter, slf4jLogger)
+                            classReader.accept(classNode, ClassReader.EXPAND_FRAMES)
+                            classNode.accept(classWriter)
+                            //
+                            byte[] code = classWriter.toByteArray()
+                            FileOutputStream fos = new FileOutputStream(destFile)
+                            fos.write(code)
+                            fos.close()
+                        } else {
+                            if (inputFile.isFile()) {
+                                FileUtils.touch(destFile)
+                                FileUtils.copyFile(inputFile, destFile)
+                            }
+                        }
+                        break
+                }
+            }
+        } else {
+            handleDirectoryInput(directoryInput, outputProvider)
+        }
+    }
+
     /**
      * 处理DirectoryInput
      * @param directoryInput
@@ -115,6 +174,31 @@ class MultiLanguagesTransform extends Transform {
         FileUtils.copyDirectory(directoryInput.file, dest)
     }
 
+    void handleJarInput(JarInput jarInput, TransformOutputProvider outputProvider, boolean isIncremental) {
+        if (isIncremental) {
+            Status status = jarInput.getStatus()
+            File dest = outputProvider.getContentLocation(
+                    jarInput.getFile().getAbsolutePath(),
+                    jarInput.getContentTypes(),
+                    jarInput.getScopes(),
+                    Format.JAR)
+            switch (status) {
+                case Status.NOTCHANGED:
+                    break
+                case Status.ADDED:
+                case Status.CHANGED:
+                    handleJarInput(jarInput, outputProvider)
+                    break
+                case Status.REMOVED:
+                    if (dest.exists()) {
+                        FileUtils.forceDelete(dest)
+                    }
+                    break
+            }
+        } else {
+            handleJarInput(jarInput, outputProvider)
+        }
+    }
 
     /**
      * 处理JarInput

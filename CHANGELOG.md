@@ -1,4 +1,6 @@
 ## CHANGELOG
+### v0.1.1
+- support Incremental [pull-23](https://github.com/MichaelJokAr/MultiLanguages/pull/23)
 ### v0.0.8
 - 解决```attachBaseContext```方法被重写问题
 

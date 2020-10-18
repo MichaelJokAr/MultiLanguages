@@ -6,13 +6,18 @@ buildscript {
         google()
         jcenter()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/a10188755550/maven' }
-        maven { url 'http://localhost:8081/repository/maven-public/' }
+        if (gradle.useLocal) {
+            maven { url "${rootProject.rootDir}/plugin_libs" }
+        } else {
+            maven { url 'https://dl.bintray.com/a10188755550/maven' }
+        }
+        maven {url 'https://mvnrepository.com/artifact/org.ow2.asm/asm'}
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.5.2'
-        classpath 'com.novoda:bintray-release:0.9.2'
-        classpath "com.github.jokar:multi-languages.plugin:0.1.1"
+        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.github.panpf.bintray-publish:bintray-publish:1.0.0'
+        classpath "com.github.jokar:multi-languages.plugin:${gradle.plugin_version}"
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -23,8 +28,12 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven { url 'https://dl.bintray.com/a10188755550/maven' }
-        maven { url 'http://localhost:8081/repository/maven-public/' }
+        if (gradle.useLocal) {
+            maven { url "${rootProject.rootDir}/plugin_libs" }
+        } else {
+            maven { url 'https://dl.bintray.com/a10188755550/maven' }
+        }
+        maven {url 'https://mvnrepository.com/artifact/org.ow2.asm/asm'}
     }
 }
 

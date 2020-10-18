@@ -1,6 +1,9 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
+if (gradle.useLocal) {
+    apply from: 'local_upload_archive.gradle'
+} else {
+    apply plugin: 'com.github.panpf.bintray-publish'
+}
 android {
     compileSdkVersion 28
 
@@ -29,11 +32,13 @@ dependencies {
 }
 
 
-publish {
-    userOrg = 'a10188755550'
-    groupId = 'com.github.jokar'
-    artifactId = 'multi-languages'
-    publishVersion = "$version"
-    desc = 'android multi language support (support android O+)'
-    website = 'https://github.com/MichaelJokAr/MultiLanguages'
+if (!gradle.useLocal) {
+    publish {
+        userOrg = 'a10188755550'
+        groupId = 'com.github.jokar'
+        artifactId = 'multi-languages'
+        publishVersion = "$version"
+        desc = 'android multi language support (support android O+)'
+        website = 'https://github.com/MichaelJokAr/MultiLanguages'
+    }
 }

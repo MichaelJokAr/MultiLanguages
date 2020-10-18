@@ -1,0 +1,17 @@
+apply plugin: 'maven'
+
+def VERSION = "${gradle.lib_version}"
+def GROUP = 'com.github.jokar'
+def ARTIFACT = 'multi-languages'
+
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri("${rootDir}/plugin_libs"))
+            pom.groupId = GROUP
+            pom.artifactId = ARTIFACT
+            pom.version = VERSION
+        }
+    }
+}

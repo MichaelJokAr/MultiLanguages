@@ -1,4 +1,9 @@
 ## CHANGELOG
+
+### v0.1.2
+- gradle version update to ```6.1.1```
+- ASM version update to ```8.0.1```
+
 ### v0.1.1
 - support Incremental [pull-23](https://github.com/MichaelJokAr/MultiLanguages/pull/23)
 ### v0.0.8

@@ -5,7 +5,7 @@ gradle.ext {
         plugin_version = "1.0.1"
         lib_version = "1.0.1"
     } else {
-        plugin_version = "0.1.1"
-        lib_version = "0.1.1"
+        plugin_version = "0.1.2"
+        lib_version = "0.1.2"
     }
 }

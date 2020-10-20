@@ -15,7 +15,7 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.0.2'
+        classpath 'com.android.tools.build:gradle:4.1.0'
         classpath 'com.github.panpf.bintray-publish:bintray-publish:1.0.0'
         classpath "com.github.jokar:multi-languages.plugin:${gradle.plugin_version}"
         // NOTE: Do not place your application dependencies here; they belong

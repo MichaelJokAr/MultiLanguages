@@ -1,6 +1,6 @@
 apply plugin: 'maven'
 
-def VERSION = "1.0.1"
+def VERSION = "1.0.9"
 def GROUP = 'com.github.jokar'
 def ARTIFACT = 'multi-languages.plugin'
 

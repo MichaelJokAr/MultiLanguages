@@ -37,7 +37,7 @@ if (!gradle.useLocal) {
         userOrg = 'a10188755550'
         groupId = 'com.github.jokar'
         artifactId = 'multi-languages'
-        publishVersion = "0.1.2"
+        publishVersion = "0.1.4"
         desc = 'android multi language support (support android O+)'
         website = 'https://github.com/MichaelJokAr/MultiLanguages'
     }

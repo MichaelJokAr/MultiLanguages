@@ -1,1 +1,11 @@
 include ':app', ':plugin', ':library'
+gradle.ext {
+    useLocal = true
+    if (useLocal) {
+        plugin_version = "1.0.1"
+        lib_version = "1.0.1"
+    } else {
+        plugin_version = "0.1.2"
+        lib_version = "0.1.2"
+    }
+}

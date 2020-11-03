@@ -1,18 +1,17 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
+if (gradle.useLocal) {
+    apply from: 'local_upload_archive.gradle'
+} else {
+    apply plugin: 'com.github.panpf.bintray-publish'
+}
 android {
     compileSdkVersion 28
-
-
+    buildToolsVersion '28.0.3'
     defaultConfig {
         minSdkVersion 15
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
     }
 
     buildTypes {
@@ -21,7 +20,6 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
 }
 
 dependencies {
@@ -29,11 +27,13 @@ dependencies {
 }
 
 
-publish {
-    userOrg = 'a10188755550'
-    groupId = 'com.github.jokar'
-    artifactId = 'multi-languages'
-    publishVersion = "$version"
-    desc = 'android multi language support (support android O+)'
-    website = 'https://github.com/MichaelJokAr/MultiLanguages'
+if (!gradle.useLocal) {
+    publish {
+        userOrg = 'a10188755550'
+        groupId = 'com.github.jokar'
+        artifactId = 'multi-languages'
+        publishVersion = "0.1.4"
+        desc = 'android multi language support (support android O+)'
+        website = 'https://github.com/MichaelJokAr/MultiLanguages'
+    }
 }

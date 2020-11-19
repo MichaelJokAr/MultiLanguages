@@ -1,7 +1,6 @@
 package com.github.jokar.multilanguages.plugin
 
 import com.android.build.gradle.AppExtension
-import com.github.jokar.multilanguages.PluginExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 

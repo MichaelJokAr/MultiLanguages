@@ -2,7 +2,6 @@ package com.github.jokar.multilanguages.plugin
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
-import com.github.jokar.multilanguages.PluginExtension
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.apache.commons.io.IOUtils
@@ -47,10 +46,45 @@ class MultiLanguagesTransform extends Transform {
     void transform(TransformInvocation transformInvocation) throws TransformException,
             InterruptedException, IOException {
         super.transform(transformInvocation)
+        println("${pluginExtension.toString()}")
+
         //没有开启返回（默认开启）
         if (!pluginExtension.enable) {
+            // 将输入原封不动的复制到输出
+            println("+-----------------------------------------------------------------------------+")
+            println("|                     Multi Languages Plugin START                            |")
+            println("+-----------------------------------------------------------------------------+")
+            def startTime = System.currentTimeMillis()
+
+            def inputs = transformInvocation.inputs
+            def outputProvider = transformInvocation.outputProvider
+
+            inputs.each { TransformInput input ->
+                //遍历directoryInputs
+                input.directoryInputs.each { DirectoryInput directoryInput ->
+                    //处理DirectoryInput
+                    def dest = outputProvider.getContentLocation(directoryInput.name,
+                            directoryInput.contentTypes, directoryInput.scopes,
+                            Format.DIRECTORY)
+                    FileUtils.copyDirectory(directoryInput.file, dest)
+                }
+                //遍历jarInputs
+                input.jarInputs.each { JarInput jarInput ->
+                    //处理JarInput
+                    def destJar = outputProvider.getContentLocation(jarInput.name,
+                            jarInput.contentTypes, jarInput.scopes, Format.JAR)
+                    FileUtils.copyFile(jarInput.file, destJar)
+                }
+            }
+
+            def cost = (System.currentTimeMillis() - startTime) / 1000
+            println("+-----------------------------------------------------------------------------+")
+            println("|                          Multi Languages Plugin END                         |")
+            println("|                            Plugin cost ： $cost s                           |")
+            println("+-----------------------------------------------------------------------------+")
             return
         }
+
         println("+-----------------------------------------------------------------------------+")
         println("|                     Multi Languages Plugin START                            |")
         println("+-----------------------------------------------------------------------------+")

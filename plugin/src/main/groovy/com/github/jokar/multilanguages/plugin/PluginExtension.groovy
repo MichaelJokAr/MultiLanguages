@@ -1,4 +1,4 @@
-package com.github.jokar.multilanguages
+package com.github.jokar.multilanguages.plugin
 
 class PluginExtension {
     boolean enable = true

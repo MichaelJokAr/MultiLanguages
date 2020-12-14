@@ -134,7 +134,7 @@ public class MethodVisitorUtil {
         mv.visitMethodInsn(INVOKEVIRTUAL, "android/content/res/Configuration", "setTo",
                 "(Landroid/content/res/Configuration;)V", false);
         mv.visitLabel(l1);
-        mv.visitFrame(Opcodes.F_SAME, 0, null, 0, null);
+//        mv.visitFrame(Opcodes.F_NEW, 0, null, 0, null);
         mv.visitVarInsn(ALOAD, 0);
         mv.visitVarInsn(ALOAD, 1);
         mv.visitMethodInsn(INVOKESPECIAL, "androidx/appcompat/app/AppCompatActivity",

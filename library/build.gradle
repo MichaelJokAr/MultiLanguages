@@ -4,6 +4,7 @@ if (gradle.useLocal) {
 } else {
     apply plugin: 'com.github.panpf.bintray-publish'
 }
+
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -32,7 +33,7 @@ if (!gradle.useLocal) {
         userOrg = 'a10188755550'
         groupId = 'com.github.jokar'
         artifactId = 'multi-languages'
-        publishVersion = "0.1.4"
+        publishVersion = "$version"
         desc = 'android multi language support (support android O+)'
         website = 'https://github.com/MichaelJokAr/MultiLanguages'
     }
